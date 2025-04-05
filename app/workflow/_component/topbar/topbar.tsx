@@ -8,7 +8,14 @@ import React from 'react'
 import SaveBtn from './SaveBtn'
 import ExecBtn from './ExecBtn'
 
-function Topbar({title,subtitle,workflowId} : {title: string;subtitle?:string;workflowId:string}) {
+interface Props {
+    title: string;
+    subtitle?:string;
+    workflowId:string;
+    hideButtons?: boolean;
+}
+
+function Topbar({title,subtitle,workflowId,hideButtons=false} : Props) {
 
     const router = useRouter();
 
@@ -28,8 +35,13 @@ function Topbar({title,subtitle,workflowId} : {title: string;subtitle?:string;wo
             </div>
         </div>
         <div className='flex flex-1 gap-1 justify-end'>
-            <ExecBtn workflowId={workflowId} />
-            <SaveBtn workflowId={workflowId} />
+            {hideButtons === false && (
+                <>
+                    <ExecBtn workflowId={workflowId} />
+                    <SaveBtn workflowId={workflowId} />
+                </>
+            )}
+            
         </div>
     </div>
   )
