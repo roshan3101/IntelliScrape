@@ -12,6 +12,7 @@ import {
     SheetTrigger,
     SheetTitle,
   } from "@/components/ui/sheet"
+import UserAvailableCreditsBadge from './UserAvailableCreditsBadge'
   
 
 const routes = [
@@ -47,7 +48,7 @@ function DesktopSidebar() {
             <Logo />
         </div>
         <div className='p-2'>
-            TODO Credits
+            <UserAvailableCreditsBadge />
         </div>
         <div className='flex flex-col p-2'>
             {routes.map((route) => (
@@ -87,6 +88,7 @@ export function MobileSidebar() {
                     <SheetContent className="w-3/4 sm:w-[540px] space-y-4" side={"left"} >
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                         <Logo />
+                        <UserAvailableCreditsBadge />
                         <div className='flex flex-col gap-1'>
                             {routes.map((route) => (
                                 <Link
