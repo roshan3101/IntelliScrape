@@ -19,8 +19,8 @@ import { Input } from '@/components/ui/input'
 import { useMutation } from '@tanstack/react-query'
 import { UpdateWorkflowCron } from '@/actions/workflows/updateWorkflowCron'
 import { toast } from 'sonner'
-import cronstrue, {} from "cronstrue"
-import cronParser from "cron-parser"
+import cronstrue from "cronstrue"
+import { CronExpressionParser } from "cron-parser"
 import { RemoveWorkflowSchedule } from '@/actions/workflows/RemoveWorkflowSchedule'
 import { Separator } from '@/components/ui/separator'
 
@@ -53,13 +53,25 @@ function SchedulerDialog(props:{cron:string | null;workflowId: string}) {
   })
 
   useEffect(() => {
+    if (!cron || cron.trim() === '') {
+      setValidCron(false);
+      setReadableCron("");
+      return;
+    }
+    
     try {
-      (cronParser as any).parseExpression(cron);
+      // Use the correct API for cron-parser v5.1.1
+      const interval = CronExpressionParser.parse(cron);
+      // Just checking if it's valid by getting the next date
+      interval.next();
+      
       const humanCronStr = cronstrue.toString(cron);
       setValidCron(true);
       setReadableCron(humanCronStr);
     } catch (error) {
-      setValidCron(false)
+      console.error("Cron validation error:", error);
+      setValidCron(false);
+      setReadableCron("");
     }
   },[cron])
 
@@ -110,12 +122,12 @@ function SchedulerDialog(props:{cron:string | null;workflowId: string}) {
         </div>
         <DialogFooter className='px-6 gap-2'>
           <DialogClose asChild>
-            <Button className='w-full' variant={"secondary"}>
+            <Button className='w-1/2' variant={"secondary"}>
               Cancel
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button className='w-full' disabled={mutation.isPending || !validCron} onClick={() => {
+            <Button className='w-1/2' disabled={mutation.isPending || !validCron} onClick={() => {
               toast.loading("Saving...",{id: "cron"})
               mutation.mutate({
                 id:props.workflowId,

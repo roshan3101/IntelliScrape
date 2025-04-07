@@ -32,6 +32,7 @@ import { Badge } from '@/components/ui/badge'
 import ExecutionStatusIndicator, { ExecutionStatusLabel } from '@/app/workflow/runs/[workflowId]/_components/ExecutionStatusIndicator'
 import { format, formatDistanceToNow } from 'date-fns'
 import { formatInTimeZone } from "date-fns-tz";
+import DuplicateWorkflowsDialog from './DuplicateWorkflowDialog'
   
 
 const statusColors = {
@@ -43,7 +44,7 @@ const statusColors = {
 function WorkflowCard({workflow} : {workflow: Workflow}) {
     const isDraft = workflow.status == WorkflowStatus.DRAFT;
   return (
-    <Card className='border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30'>
+    <Card className='border border-separate shadow-sm rounded-lg overflow-hidden hover:shadow-md dark:shadow-primary/30 group/card'>
         <CardContent className='p-4 flex items-center justify-between h-[100px]'>
             <div className='flex items-center justify-end space-x-3'>
                 <div className={cn("w-10 h-10 rounded-full flex items-center justify-center",statusColors[workflow.status as WorkflowStatus])}>
@@ -51,10 +52,15 @@ function WorkflowCard({workflow} : {workflow: Workflow}) {
                 </div>
                 <div>
                 <h3 className='text-base font-bold text-muted-foreground flex items-center'>
-                    <Link href={`/workflow/editor/${workflow.id}`} className='flex items-center hover:underline'>{workflow.name}</Link>
+                    <TooltipWrapper content={workflow.description}>
+                        <Link href={`/workflow/editor/${workflow.id}`} className='flex items-center hover:underline'>{workflow.name}</Link>
+                    </TooltipWrapper>
                     {isDraft  && (
                         <span className='ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full'>Draft</span>
                     )}
+
+                    <DuplicateWorkflowsDialog workflowId={workflow.id} />
+
                 </h3>
                 <ScheduleSection isDraft={isDraft} creditsCost={workflow.creditsCost} workflowId={workflow.id} cron={workflow.cron} />
                 </div>

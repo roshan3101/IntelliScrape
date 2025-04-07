@@ -20,7 +20,7 @@ export function NodeInput ({input,nodeId} : {input:TaskParam;nodeId:string;}) {
 
     const { invalidInputs } = useFlowValidation();
     const edges = useEdges();
-    const isConnected = edges.some((edge) => edge.target === nodeId || edge.targetHandle === input.name);
+    const isConnected = edges.some((edge) => edge.target === nodeId && edge.targetHandle === input.name);
 
     const hasErrors = invalidInputs.find((node) => node.nodeId === nodeId)?.inputs.find((invalidinput) => invalidinput === input.name);
 

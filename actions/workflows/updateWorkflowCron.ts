@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import cronParser from "cron-parser"
+import { CronExpressionParser } from "cron-parser"
 import { revalidatePath } from "next/cache";
 
 export async function UpdateWorkflowCron ({
@@ -18,7 +18,7 @@ export async function UpdateWorkflowCron ({
     }
 
     try {
-        const interval = (cronParser as any).parseExpression(cron, { utc: true })
+        const interval = CronExpressionParser.parse(cron, { tz: 'UTC' })
 
         await prisma.workflow.update({
             where:{
@@ -36,5 +36,4 @@ export async function UpdateWorkflowCron ({
     }
 
     revalidatePath(`/workflows`)
-
 }

@@ -30,13 +30,9 @@ export async function ExecuteWorkflow(executionId: string, nextRunAt? : Date){
 
     await initialisePhaseStatus(execution);
 
-   
-
     let creditsConsumed = 0;
     let executionFailed = false;
     for(const phase of execution.phases){
-
-
         const phaseExecution = await executionWorkflowPhase(phase,environment,edges,execution.userId);
         creditsConsumed += phaseExecution.creditsConsumed;
         if(!phaseExecution.success) {

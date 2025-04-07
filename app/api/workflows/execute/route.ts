@@ -3,7 +3,7 @@ import { ExecuteWorkflow } from "@/lib/workflow/executeWorkflow";
 import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { ExecutionPhaseStatus, WorkflowExecutionPlan, WorkflowExecutionStatus, WorkflowExecutionTrigger } from "@/types/workflow";
 import { timingSafeEqual } from "crypto";
-import cronParser from "cron-parser"
+import { CronExpressionParser } from "cron-parser"
 
 function isValidSecret(secret: string){
     const API_SECRET = process.env.API_SECRET;
@@ -55,7 +55,7 @@ export async function GET(request:Request) {
 
 
     try {
-        const cron = (cronParser as any).parseExpression(workflow.cron!,{utc: true});
+        const cron = CronExpressionParser.parse(workflow.cron!, { tz: 'UTC' });
         const nextRun = cron.next().toDate();
    
 
@@ -88,5 +88,4 @@ export async function GET(request:Request) {
     } catch (error) {
         return Response.json({error: "Internal server error"},{status: 500});
     }
-
 }

@@ -5,7 +5,7 @@ import React from 'react'
 import Editor from '../../_component/Editor';
 
 async function editor({params}:{params:{workflowId: string}}) {
-  const {workflowId} = params;
+  const {workflowId} = await params;
   const {userId} = await auth();
 
   if(!userId){

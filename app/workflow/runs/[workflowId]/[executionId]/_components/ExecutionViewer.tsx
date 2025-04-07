@@ -32,13 +32,18 @@ function ExecutionViewer({initialData}:{initialData:ExecutionData}) {
         queryKey: ["execution",initialData?.id],
         initialData,
         queryFn: () => GetWorkflowExecutionPhase(initialData!.id),
-        refetchInterval:(q) => q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : false,
+        refetchInterval:(q) => q.state.data?.status === WorkflowExecutionStatus.RUNNING ? 1000 : 5000,
+        staleTime: 0, // Consider data immediately stale to ensure fresh fetches
+        refetchOnMount: true, // Always refetch when component mounts
+        refetchOnWindowFocus: true, // Refetch when window regains focus
     })
 
     const phaseDetails = useQuery({
         queryKey: ["phaseDetails",selectedPhase],
         enabled: selectedPhase !== null,
-        queryFn: () => GetWorkflowPhaseDetails(selectedPhase!)
+        queryFn: () => GetWorkflowPhaseDetails(selectedPhase!),
+        refetchInterval: 2000, // Refetch phase details every 2 seconds
+        staleTime: 0, // Consider data immediately stale
     })
 
     const isRunning = query.data?.status == WorkflowExecutionStatus.RUNNING;

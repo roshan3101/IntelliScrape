@@ -71,25 +71,21 @@ function FlowEditor({workflow}:{workflow:Workflow}) {
 
     const onConnect = useCallback((connection : Connection) => {
         // First add the edge
-        setEdges((egs => addEdge({...connection,animated:true},egs)));
+        setEdges((egs) => addEdge({...connection,animated:true},egs));
         
         // Then update the node data if we have a target handle
         if(!connection.targetHandle) return;
         
         // Use a timeout to ensure the edge is added first
-        setTimeout(() => {
-            const node = nodes.find((nd) => nd.id === connection.target);
-            if(!node) return;
-            
-            const nodeInputs = node.data.inputs || {};
-            const targetHandle = connection.targetHandle as string;
-            updateNodeData(connection.target, {
-                inputs: {
-                    ...nodeInputs,
-                    [targetHandle]: ""
-                }
-            });
-        }, 0);
+        const node = nodes.find((nd) => nd.id === connection.target);
+        if(!node) return;
+        const nodeInputs = node.data.inputs;
+        updateNodeData(node.id,{
+            inputs: {
+                ...nodeInputs,
+                [connection.targetHandle]:"",
+            }
+        })
     }, [setEdges, updateNodeData, nodes]);
 
     const isValidConnection = useCallback((connection:Edge | Connection) => {
@@ -133,7 +129,7 @@ function FlowEditor({workflow}:{workflow:Workflow}) {
         const detectedCycle = hasCycle(target);
         return !detectedCycle;
 
-    },[nodes])
+    },[nodes,edges])
 
   return (
         <main className='h-full w-full'>
