@@ -28,6 +28,7 @@ function BreadcrumbHeader() {
                                 {path === "" ? "home" : path}
                             </BreadcrumbLink>
                         </BreadcrumbItem>
+                        {index !== paths.length - 1 && <BreadcrumbSeparator />}
                     </React.Fragment>
                 ))}
             </BreadcrumbList>

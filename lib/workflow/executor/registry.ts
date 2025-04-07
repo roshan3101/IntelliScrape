@@ -8,6 +8,10 @@ import { FillInputExecutor } from "./FillInputExecutor";
 import { ClickElementExecutor } from "./ClickElementExecutor";
 import { WaitForElementExecutor } from "./WaitForElementExecutor";
 import { DeliveryviaWebhookExecutor } from "./DeliverViaWebhookExecutor";
+import { ExtractDataWithAiExecutor } from "./ExtractDataWithAiExecutor";
+import { ReadPropertyFromJsonExecutor } from "./ReadPropertyFromJsonExecutor";
+import { AddPropertyToJsonExecutor } from "./AddPropertyToJsonExecutor";
+import { NavigateUrlExecutor } from "./NavigateUrlExecutor";
 
 type ExecutorFn<T extends WorkflowTask>= (environment: ExecutionEnvironment<T>) => Promise<boolean>;
 
@@ -23,4 +27,8 @@ export const ExecutorRegistry: RegistryType = {
     CLICK_ELEMENT: ClickElementExecutor,
     WAIT_FOR_ELEMENT: WaitForElementExecutor,
     DELIVER_VIA_WEBHOOK: DeliveryviaWebhookExecutor,
+    EXTRACT_DATA_WITH_AI:ExtractDataWithAiExecutor,
+    READ_PROPERTY_FROM_JSON:ReadPropertyFromJsonExecutor,
+    ADD_PROPERTY_TO_JSON: AddPropertyToJsonExecutor,
+    NAVIGATE_URL: NavigateUrlExecutor,
 }
