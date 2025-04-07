@@ -39,25 +39,28 @@ function ExecutionViewer({initialData}:{initialData:ExecutionData}) {
     })
 
     const phaseDetails = useQuery({
-        queryKey: ["phaseDetails",selectedPhase],
+        queryKey: ["phaseDetails",selectedPhase,query.data?.status],
         enabled: selectedPhase !== null,
         queryFn: () => GetWorkflowPhaseDetails(selectedPhase!),
-        refetchInterval: 2000, // Refetch phase details every 2 seconds
-        staleTime: 0, // Consider data immediately stale
+        // refetchInterval: 2000, // Refetch phase details every 2 seconds
+        // staleTime: 0, // Consider data immediately stale
     })
 
     const isRunning = query.data?.status == WorkflowExecutionStatus.RUNNING;
 
     useEffect(() => {
-        const phases = query.data?.phases || [];
-        if(isRunning){
-            const phaseToSelect = phases.toSorted((a,b) => a.startedAt! > b.startedAt! ? -1 : 1)[0];
+        // Only auto-select a phase if no phase is currently selected
+        if (selectedPhase === null) {
+            const phases = query.data?.phases || [];
+            if(isRunning){
+                const phaseToSelect = phases.toSorted((a,b) => a.startedAt! > b.startedAt! ? -1 : 1)[0];
+                setSelectedPhase(phaseToSelect.id)
+                return;
+            };
+            const phaseToSelect = phases.toSorted((a,b) => a.completedAt! > b.completedAt! ? -1 : 1)[0];
             setSelectedPhase(phaseToSelect.id)
-            return;
-        };
-        const phaseToSelect = phases.toSorted((a,b) => a.completedAt! > b.completedAt! ? -1 : 1)[0];
-            setSelectedPhase(phaseToSelect.id)
-    },[query.data?.phases,isRunning,setSelectedPhase])
+        }
+    },[query.data?.phases, isRunning, setSelectedPhase, selectedPhase])
 
     const duration = DatesToDurationString(query.data?.completedAt,query.data?.startedAt)
 
