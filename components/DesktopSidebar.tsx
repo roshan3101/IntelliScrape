@@ -17,22 +17,22 @@ import UserAvailableCreditsBadge from './UserAvailableCreditsBadge'
 
 const routes = [
     {
-        href: "home",
+        href: "/",
         label: "Home",
         icon: Home
     },
     {
-        href: "workflows",
+        href: "/workflows",
         label: "Workflows",
         icon: WorkflowIcon
     },
     {
-        href: "credentials",
+        href: "/credentials",
         label: "Credentials",
         icon: ShieldCheckIcon
     },
     {
-        href: "billing",
+        href: "/billing",
         label: "Billing",
         icon: CoinsIcon
     }
@@ -40,7 +40,14 @@ const routes = [
 
 function DesktopSidebar() {
     const pathname = usePathname();
-    const activeRoute = routes.find((route) => route.href.length > 0 && pathname.includes(route.href)) || routes[0];
+    
+    // Find the active route by checking if the pathname starts with the route's href
+    const activeRoute = routes.find(route => {
+        if (route.href === "/") {
+            return pathname === "/";
+        }
+        return pathname.startsWith(route.href);
+    }) || routes[0];
 
   return (
     <div className='hidden relative md:block min-w-[280px] max-w-[280px] h-screen overflow-hidden w-full bg-primary/5 dark:bg-secondary-30 dark:text-foreground text-muted-foreground border-r-2 border-separate'>
@@ -71,7 +78,14 @@ function DesktopSidebar() {
 
 export function MobileSidebar() {
     const pathname = usePathname();
-    const activeRoute = routes.find((route) => route.href.length > 0 && pathname.includes(route.href)) || routes[0];
+    
+    // Find the active route by checking if the pathname starts with the route's href
+    const activeRoute = routes.find(route => {
+        if (route.href === "/") {
+            return pathname === "/";
+        }
+        return pathname.startsWith(route.href);
+    }) || routes[0];
 
     const [isOpen,setOpen] = useState(false);
 
