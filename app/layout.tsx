@@ -4,6 +4,7 @@ import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import Script from 'next/script';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,10 @@ export default function RootLayout({
       >
         <AppProviders>{children}</AppProviders>
         <Toaster richColors />
+        <Script
+          id="razorpay-checkout-js"
+          src="https://checkout.razorpay.com/v1/checkout.js"
+        />
       </body>
     </html>
     </ClerkProvider>

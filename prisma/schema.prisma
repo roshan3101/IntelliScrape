@@ -99,3 +99,16 @@ model Credential {
 
   @@unique([userId, name])
 }
+
+model UserPurchase {
+  id String @id @default(cuid())
+  userId String
+  purchaseId String
+  description String
+  amount Int
+  currency String
+  status String
+  createdAt DateTime @default(now())
+
+  
+}

@@ -11,7 +11,7 @@ import ExecutionStatusChart from './_components/ExecutionStatusChart';
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod';
 import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 
-function HomePage({searchParams}:{searchParams: {month?:string; year?: string}}) {
+async function HomePage({searchParams}:{searchParams: {month?:string; year?: string}}) {
   const currentDate = new Date();
   const {month, year} = searchParams;
   const period :Period = {
