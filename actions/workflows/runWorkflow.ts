@@ -1,3 +1,9 @@
+/**
+ * Server action for executing a workflow
+ * This action handles both manual execution of published workflows
+ * and draft workflows with provided flow definitions
+ */
+
 "use server"
 
 import prisma from "@/lib/prisma";
@@ -8,20 +14,29 @@ import { ExecutionPhaseStatus, WorkflowExecutionPlan, WorkflowExecutionStatus, W
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
+/**
+ * Executes a workflow either from its published state or with a provided flow definition
+ * @param form - Object containing workflowId and optional flowDefinition
+ * @throws Error if user is unauthorized, workflow not found, or execution plan generation fails
+ * @redirects to the workflow execution details page on success
+ */
 export async function RunWorkflow(form: {
     workflowId: string;
     flowDefinition?: string
 }) {
+    // Get the authenticated user's ID
     const { userId } = await auth();
     if(!userId) {
         throw new Error("unauthorized")
     }
 
+    // Validate required parameters
     const {workflowId, flowDefinition} = form;
     if(!workflowId){
         throw new Error("workflow is required");
     }
 
+    // Fetch the workflow and verify ownership
     const workflow = await prisma.workflow.findUnique({
         where:{
             userId,
@@ -33,15 +48,19 @@ export async function RunWorkflow(form: {
         throw new Error("workflow not defined");
     }
 
+    // Handle execution plan generation based on workflow status
     let executionPlan: WorkflowExecutionPlan;
     let workflowDefinition = flowDefinition;
+    
     if(workflow.status === WorkflowStatus.PUBLISHED){
+        // For published workflows, use the stored execution plan
         if(!workflow.executionPlan){
             throw new Error("no execution plan found in published workflow")
         }
         executionPlan = JSON.parse(workflow.executionPlan);
         workflowDefinition = workflow.definition
-    } else{
+    } else {
+        // For draft workflows, generate execution plan from provided flow definition
         if(!flowDefinition) {
             throw new Error("flow definition is not defined")
         }
@@ -59,6 +78,7 @@ export async function RunWorkflow(form: {
         executionPlan = result.executionPlan;
     }
     
+    // Create the workflow execution record
     const execution = await prisma.workflowExecution.create({
         data: {
             workflowId,
@@ -91,6 +111,9 @@ export async function RunWorkflow(form: {
         throw new Error("workflow execution not created")
     }
 
+    // Start the workflow execution
     ExecuteWorkflow(execution.id);
+    
+    // Redirect to the execution details page
     redirect(`/workflow/runs/${workflowId}/${execution.id}`)
 }

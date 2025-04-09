@@ -1,36 +1,211 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# IntelliScrape
+
+![IntelliScrape Logo](assets/logo.png)
+
+IntelliScrape is a powerful web automation and scraping platform that enables users to create, manage, and execute complex workflows without writing code. Built with modern web technologies, it provides a user-friendly interface for automating web interactions and data extraction.
+
+## Table of Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Workflow Management](#workflow-management)
+- [Task Types](#task-types)
+- [Execution System](#execution-system)
+- [Credits System](#credits-system)
+- [Security](#security)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+
+## Features
+
+- **Visual Workflow Builder**: Create complex automation workflows using a drag-and-drop interface
+- **Multiple Task Types**: Support for various web automation and data extraction tasks
+- **Scheduled Execution**: Run workflows on a schedule using cron expressions
+- **Real-time Monitoring**: Track workflow executions with detailed logs
+- **Credit-based System**: Fair resource allocation through a credit system
+- **Secure Credential Management**: Safely store and use credentials in workflows
+- **API Integration**: RESTful API for programmatic access
+- **Detailed Analytics**: Track usage and performance metrics
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- SQLite database
+- Modern web browser
 
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/intelliscrape.git
+cd intelliscrape
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. Initialize the database:
+```bash
+npx prisma migrate dev
+```
+
+5. Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Creating a Workflow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Navigate to the Workflows section
+2. Click "Create New Workflow"
+3. Add tasks using the visual editor
+4. Configure task parameters
+5. Connect tasks to create the workflow
+6. Test and publish the workflow
 
-## Learn More
+### Example Workflow
 
-To learn more about Next.js, take a look at the following resources:
+```mermaid
+graph TD
+    A[Launch Browser] --> B[Navigate to URL]
+    B --> C[Extract Data]
+    C --> D[Process Data]
+    D --> E[Export Results]
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Task Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each task can be configured with:
+- Input parameters
+- Output mappings
+- Error handling
+- Retry settings
 
-## Deploy on Vercel
+## Workflow Management
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### States
+- **DRAFT**: Development and testing phase
+- **PUBLISHED**: Production-ready workflows
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Version Control
+- Automatic version tracking
+- Rollback capabilities
+- Change history
+
+## Task Types
+
+### Browser Operations
+- `LAUNCH_BROWSER`: Start browser instance
+- `PAGE_TO_HTML`: Capture page content
+- `EXTRACT_TEXT_FROM_ELEMENT`: Extract specific content
+
+### Data Processing
+- Text extraction
+- Data transformation
+- Export operations
+
+### Each Task Includes:
+- Label
+- Icon
+- Type
+- Required inputs
+- Expected outputs
+- Credit cost
+
+## Execution System
+
+### States
+- **Queued**: Waiting to start
+- **Running**: Active execution
+- **Completed**: Successful finish
+- **Failed**: Error occurred
+
+### Monitoring
+- Real-time status updates
+- Phase-by-phase tracking
+- Detailed execution logs
+- Performance metrics
+
+## Credits System
+
+### Credit Allocation
+- Task-based consumption
+- Variable credit costs
+- Usage tracking
+- Billing integration
+
+### Management
+- Credit balance monitoring
+- Purchase additional credits
+- Usage history
+- Invoice generation
+
+## Security
+
+### Credential Management
+- Encrypted storage
+- Secure usage in workflows
+- Access control
+- Audit logging
+
+### Data Protection
+- End-to-end encryption
+- Secure data handling
+- Compliance with data protection regulations
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow the code style guide
+- Write tests for new features
+- Update documentation
+- Use conventional commits
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, please:
+- Check the [documentation](docs/)
+- Open an issue
+- Contact support@intelliscrape.com
+
+## Acknowledgments
+
+- Thanks to all contributors
+- Built with Next.js and Prisma
+- Inspired by modern web automation needs
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ by the IntelliScrape team</sub>
+</div>
