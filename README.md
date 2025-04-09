@@ -14,9 +14,6 @@ IntelliScrape is a powerful web automation and scraping platform that enables us
 - [Execution System](#execution-system)
 - [Credits System](#credits-system)
 - [Security](#security)
-- [Contributing](#contributing)
-- [License](#license)
-- [Support](#support)
 
 ## Features
 
