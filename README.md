@@ -1,6 +1,6 @@
 # IntelliScrape
 
-![IntelliScrape Logo](assets/logo.png)
+![IntelliScrape Logo](public/logo.svg)
 
 IntelliScrape is a powerful web automation and scraping platform that enables users to create, manage, and execute complex workflows without writing code. Built with modern web technologies, it provides a user-friendly interface for automating web interactions and data extraction.
 
