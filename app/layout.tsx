@@ -5,20 +5,20 @@
  */
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 
-// Initialize Geist Sans font for general text
-const geistSans = Geist({
+// Initialize Inter font for general text
+const inter = Inter({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-// Initialize Geist Mono font for code/monospace text
-const geistMono = Geist_Mono({
+// Initialize Roboto Mono font for code/monospace text
+const robotoMono = Roboto_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -56,7 +56,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${inter.variable} ${robotoMono.variable} antialiased`}
         >
           {/* Global application providers */}
           <AppProviders>{children}</AppProviders>
