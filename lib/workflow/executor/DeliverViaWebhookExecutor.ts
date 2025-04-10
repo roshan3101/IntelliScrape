@@ -1,39 +1,34 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { DeliverViaWebhookTask } from "../task/DeliveryViaWebhook";
+import { DeliverViaWebhookTask } from "../task/DeliverViaWebhook";
 
-export async function DeliveryviaWebhookExecutor (environment: ExecutionEnvironment<typeof DeliverViaWebhookTask>) : Promise<boolean> {
+export async function DeliverViaWebhookExecutor(environment: ExecutionEnvironment<typeof DeliverViaWebhookTask>): Promise<boolean> {
     try {
-        const targetUrl = environment.getInput("Target URL");
-        if(!targetUrl){
-            environment.log.error("input-> targetUrl not defined");
+        const url = environment.getInput("URL");
+        if(!url){
+            environment.log.error("input-> url not defined");
+        }
+        const data = environment.getInput("Data");
+        if(!data){
+            environment.log.error("input-> data not defined");
         }
 
-        const body = environment.getInput("Body");
-        if(!body){
-            environment.log.error("input-> body not defined");
-        }
-        const response = await fetch(targetUrl,{
+        const response = await fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(body),
+            body: data,
         });
 
-        const statusCode = response.status;
-        if(statusCode !== 200){
-            environment.log.error(`Status code : ${statusCode}`);
-            return false;
+        if(!response.ok){
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const responseBody = await response.json();
-        environment.log.info(JSON.stringify(responseBody,null,4));
-
-
+        environment.log.info(`Data delivered to ${url}`);
         return true;
         
-    } catch (error:any) {
-        environment.log.error(error.message);
-        return false
+    } catch (error: unknown) {
+        environment.log.error(error instanceof Error ? error.message : String(error));
+        return false;
     }
 }

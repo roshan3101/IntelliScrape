@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { FillInputTask } from "../task/FillInput";
 
-export async function FillInputExecutor (environment: ExecutionEnvironment<typeof FillInputTask>) : Promise<boolean> {
+export async function FillInputExecutor(environment: ExecutionEnvironment<typeof FillInputTask>): Promise<boolean> {
     try {
         const selector = environment.getInput("Selector");
         if(!selector){
@@ -9,13 +9,14 @@ export async function FillInputExecutor (environment: ExecutionEnvironment<typeo
         }
         const value = environment.getInput("Value");
         if(!value){
-            environment.log.error("input-> value not defined")
+            environment.log.error("input-> value not defined");
         }
 
-        await environment.getPage()!.type(selector,value);
-
+        await environment.getPage()!.type(selector, value);
         return true;
         
+    } catch (error: unknown) {
+        environment.log.error(error instanceof Error ? error.message : String(error));
     } catch (error:any) {
         environment.log.error(error.message);
         return false
