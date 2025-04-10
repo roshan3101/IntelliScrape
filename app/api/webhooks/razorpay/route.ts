@@ -60,11 +60,11 @@ export async function POST(req: Request) {
             const orderDetails = await razorpay.orders.fetch(order);
             const notes = orderDetails.notes as unknown as RazorpayOrder['notes'];
             
-            if (!notes || !notes.userId || !notes.packId || !notes.credits) {
+            if (!notes || !notes.userId || !notes.credits) {
                 throw new Error("Invalid order notes");
             }
 
-            const { userId, packId, credits } = notes;
+            const { userId, credits } = notes;
 
             // Update user's credits
             await prisma.userBalance.upsert({

@@ -15,7 +15,7 @@ import CustomDialogHeader from '@/components/CustomDialogHeader';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UpdateWorkflow } from '@/actions/workflows/updateWorkflow';
+import { UpdateWorkflowCron } from '@/actions/workflows/updateWorkflowCron';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { RemoveWorkflowSchedule } from '@/actions/workflows/RemoveWorkflowSchedule';
@@ -28,7 +28,7 @@ function SchedulerDialog(props:{cron:string | null;workflowId: string}) {
     const [readableCron,setReadableCron] = useState("");
 
     const mutation = useMutation({
-        mutationFn: UpdateWorkflow,
+        mutationFn: UpdateWorkflowCron,
         onSuccess:() => {
             toast.success("schedule updated successfully",{id: "cron"});
         },

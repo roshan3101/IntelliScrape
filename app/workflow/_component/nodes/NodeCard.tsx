@@ -5,6 +5,16 @@ import { cn } from '@/lib/utils';
 import { useReactFlow } from '@xyflow/react';
 import React from 'react'
 
+interface NodeCardProps {
+    data: {
+        label: string;
+        type: string;
+        description?: string;
+        icon?: string;
+    };
+    selected: boolean;
+}
+
 function NodeCard({
     children,
     nodeId,
