@@ -1,7 +1,4 @@
-import { GetPeriods } from '@/actions/analytics/GetPeriods';
-import React, { Suspense } from 'react'
-import PeriodSelector from './_components/PeriodSelector';
-import { Period } from '@/types/analytics';
+import { React, Suspense } from 'react'
 import { Skeleton } from '@/components/ui/skeleton';
 import { GetStatsCardsValues } from '@/actions/analytics/GetStatsCardsValues';
 import { CirclePlayIcon, CoinsIcon, WaypointsIcon } from 'lucide-react';
@@ -10,26 +7,20 @@ import { GetWorkflowExecutionStats } from '@/actions/analytics/GetWorkflowExecut
 import ExecutionStatusChart from './_components/ExecutionStatusChart';
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod';
 import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
+import { Period } from '@/types/analytics';
 
-async function HomePage({searchParams}:{searchParams: {month?:string; year?: string}}) {
+async function HomePage() {
   const currentDate = new Date();
-  const {month, year} = searchParams;
-  const period :Period = {
-    month: month? parseInt(month) : currentDate.getMonth(),
-    year: year? parseInt(year) : currentDate.getFullYear(),
+  const period: Period = {
+    month: currentDate.getMonth(),
+    year: currentDate.getFullYear(),
   }
-
 
   return (
     <div className='flex flex-1 flex-col h-full'>
         <div className='flex justify-between'>
           <h1 className='text-3xl font-bold'>Home</h1>
-          <Suspense fallback={
-            <Skeleton className='w-[180px] h-[40px]' />
-          }>
-            <PeriodSelectorWrapper selectedPeriod={period} />
-          </Suspense>
-      </div>
+        </div>
       <div className='h-full py-6 flex flex-col gap-4'>
         <Suspense fallback={<StatsCardSkeleton />}>
           <StatsCards selectedPeriod={period} />
@@ -43,11 +34,6 @@ async function HomePage({searchParams}:{searchParams: {month?:string; year?: str
       </div>
     </div>
   )
-}
-
-async function PeriodSelectorWrapper({selectedPeriod}:{selectedPeriod:Period}) {
-  const periods = await GetPeriods();
-  return <PeriodSelector selectedPeriod={selectedPeriod} periods={periods} />
 }
 
 async function StatsCards({selectedPeriod}:{selectedPeriod: Period}) {
@@ -73,7 +59,6 @@ async function StatsCards({selectedPeriod}:{selectedPeriod: Period}) {
   )
 }
 
-
 function StatsCardSkeleton(){
   return (
     <div className='grid grid-3 lg:gap-8 lg:grid-cols-3 '>
@@ -85,21 +70,17 @@ function StatsCardSkeleton(){
 }
 
 async function StatsExecutionStatus({selectedPeriod}:{selectedPeriod:Period}){
-  const data =await GetWorkflowExecutionStats(selectedPeriod);
-
+  const data = await GetWorkflowExecutionStats(selectedPeriod);
   return (
     <ExecutionStatusChart data={data} />
   )
-
 }
 
 async function CreditsUsageInPeriod({selectedPeriod}:{selectedPeriod:Period}){
-  const data =await GetCreditsUsageInPeriod(selectedPeriod);
-
+  const data = await GetCreditsUsageInPeriod(selectedPeriod);
   return (
-    <CreditUsageChart data={data} title="Daily credits spent" description="Daily credits consumed in selected period" />
+    <CreditUsageChart data={data} title="Daily credits spent" description="Daily credits consumed in current year" />
   )
-
 }
 
 export default HomePage
