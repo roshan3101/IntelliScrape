@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
         const body = await req.text();
         const headersList = headers();
-        const signature = headersList.get("x-razorpay-signature");
+        const signature = headersList.get("x-razorpay-signature") || "";
 
         // Verify webhook signature
         if (!signature || !process.env.RAZORPAY_WEBHOOK_SECRET) {
