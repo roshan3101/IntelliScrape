@@ -8,7 +8,7 @@ import CreateCredentialDialog from './_components/CreateCredentialDialog'
 import { formatDistanceToNow } from 'date-fns'
 import DeleteCredentialDialog from './_components/DeleteCredentialDialog'
 
-function CredentialsPage() {
+export default function Page() {
   return (
     <div className='flex flex-col flex-1 h-full'>
         <div className='flex justify-between'>
@@ -39,10 +39,7 @@ function CredentialsPage() {
   )
 }
 
-export default CredentialsPage
-
-
-async function UserCredentials () {
+async function UserCredentials() {
     const credentials = await GetCredentialForUser();
     if(!credentials){
         return (
@@ -66,7 +63,6 @@ async function UserCredentials () {
             </div>
         </Card>
     }
-
 
     return (
         <div className='flex gap-2 flex-wrap'>

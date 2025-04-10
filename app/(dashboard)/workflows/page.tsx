@@ -7,7 +7,7 @@ import CreateWorkflowsDialog from './_components/CreateWorkflowsDialog'
 import WorkflowCard from './_components/WorkflowCard'
 
 
-function Workflows() {
+export default function Page() {
   return (
     <div className='flex-1 flex flex-col h-full'>
         <div className='flex justify-between'>
@@ -30,7 +30,7 @@ function Workflows() {
 }
 
 
-function UserWorkflowsSkeleton () {
+function UserWorkflowsSkeleton() {
     return (
         <div className='space-y-2'>
             {[1,2,3,4].map((i) => (
@@ -40,8 +40,7 @@ function UserWorkflowsSkeleton () {
     )
 }
 
-async function UserWorkflows () {
-
+async function UserWorkflows() {
     const workflows = await getWorkflowsForUser();
     if(!workflows){
         return (
@@ -82,7 +81,3 @@ async function UserWorkflows () {
         </div>
     )
 }
-
-
-
-export default Workflows

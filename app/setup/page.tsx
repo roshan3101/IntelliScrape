@@ -1,8 +1,9 @@
 import { SetupUser } from "@/actions/biling/SetupUser";
 
-async function setupPage(){
-
-    return await SetupUser();
+export default function Page() {
+  return <SetupUserWrapper />;
 }
 
-export default setupPage;
+async function SetupUserWrapper() {
+  return await SetupUser();
+}
