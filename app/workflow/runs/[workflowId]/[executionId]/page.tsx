@@ -5,17 +5,12 @@ import { Loader2Icon } from "lucide-react";
 import { Suspense } from "react";
 import ExecutionViewer from "./_components/ExecutionViewer";
 
-export default function Page({
-  params
-}: {
-  params?: {
-    executionId?: string;
-    workflowId?: string;
-  }
-}) {
-    // Use optional chaining and provide defaults
-    const workflowId = params?.workflowId || '';
-    const executionId = params?.executionId || '';
+export default async function ExecutionViewerPage({params}:{params:{
+    executionId: string;
+    workflowId: string
+}}) {
+    // Await the params object before accessing its properties
+    const { workflowId, executionId } = await params;
     
     return (
     <div className="flex flex-col h-screen w-full overflow-hidden">

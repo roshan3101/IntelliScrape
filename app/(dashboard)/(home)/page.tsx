@@ -11,13 +11,16 @@ import ExecutionStatusChart from './_components/ExecutionStatusChart';
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod';
 import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 
-export default function Page({ 
-  searchParams 
-}: { 
-  searchParams?: { month?: string; year?: string } 
-}) {
+interface HomePageProps {
+  searchParams: {
+    month?: string;
+    year?: string;
+  };
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
   const currentDate = new Date();
-  const {month, year} = searchParams || {};
+  const {month, year} = searchParams;
   const period: Period = {
     month: month ? parseInt(month) : currentDate.getMonth(),
     year: year ? parseInt(year) : currentDate.getFullYear(),

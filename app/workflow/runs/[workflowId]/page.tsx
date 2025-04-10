@@ -4,19 +4,11 @@ import { GetWorkflowExecutions } from '@/actions/workflows/GetWorkflowExecutions
 import { InboxIcon, Loader2Icon } from 'lucide-react';
 import ExecutionsTable from './_components/ExecutionsTable';
 
-export default function Page({
-  params
-}: {
-  params?: {
-    workflowId?: string;
-  }
-}) {
-  const workflowId = params?.workflowId || '';
-  
+function ExecutionsPage({params}:{params:{workflowId: string}}) {
   return (
     <div className='h-full overflow-auto w-full'>
         <Topbar 
-        workflowId={workflowId} 
+        workflowId={params.workflowId} 
         hideButtons
         title='All runs'
         subtitle='List of all your workflow rus'
@@ -28,7 +20,7 @@ export default function Page({
             </div>
         }
         >
-            <ExecutionsTableWrapper workflowId={workflowId} />    
+            <ExecutionsTableWrapper workflowId={params.workflowId} />    
         </Suspense>
     </div>
   )
@@ -62,3 +54,5 @@ async function ExecutionsTableWrapper({workflowId}:{workflowId: string}){
     </div>
 
 }
+
+export default ExecutionsPage

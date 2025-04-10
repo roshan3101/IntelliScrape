@@ -3,23 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import React from 'react'
 import Editor from '../../_component/Editor';
 
-export default function Page({
-  params
-}: {
-  params?: {
-    workflowId?: string;
-  }
-}) {
-  const workflowId = params?.workflowId || '';
-  
-  return <EditorWrapper workflowId={workflowId} />;
-}
-
-async function EditorWrapper({
-  workflowId
-}: {
-  workflowId: string
-}) {
+async function editor({params}:{params:{workflowId: string}}) {
+  const {workflowId} = await params;
   const {userId} = await auth();
 
   if(!userId){
@@ -41,3 +26,5 @@ async function EditorWrapper({
     <Editor workflow={workflow} />
   )
 }
+
+export default editor

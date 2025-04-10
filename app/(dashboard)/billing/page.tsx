@@ -11,7 +11,10 @@ import CreditUsageChart from "../(home)/_components/biling/_components/CreditUsa
 import { GetUserPurchasesHistory } from "@/actions/biling/GetUserPurchasesHistory";
 import InvoiceBtn from "./_components/InvoiceBtn";
 
-export default function Page() {
+export default function BilingPage() {
+
+
+
     return(
         <div className="mx-auto p-4 space-y-8">
             <h1 className="text-3xl font-bold">
