@@ -9,8 +9,9 @@ import { useUser } from '@clerk/nextjs'
 import { CoinsIcon, CreditCard, Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { PurchaseCredits } from '@/actions/biling/PurchaseCredits'
 
-// Declare Razorpay type for window object (if not already globally declared)
+// Declare Razorpay type for window object
 declare global {
     interface Window {
         Razorpay: {
@@ -37,7 +38,7 @@ interface RazorpayErrorResponse {
 function CreditsPurchase() {
     const [selectedPackId, setSelectedPackId] = useState<PackId>(PackId.MEDIUM)
     const [isProcessing, setIsProcessing] = useState(false)
-    const { user } = useUser() // Get user details for prefill
+    const { user } = useUser()
 
     const handlePurchase = async () => {
         if (!user) {
@@ -60,55 +61,30 @@ function CreditsPurchase() {
         toast.info("Processing your purchase...")
 
         try {
-            // 1. Create Order on Backend
-            const response = await fetch('/api/payments/create-order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // Send amount in paisa (smallest currency unit)
-                body: JSON.stringify({ amount: pack.price * 100, currency: 'INR' /*, creditPackId: pack.id */ }), // Consider sending pack.id in notes
-            })
+            // Create order on backend
+            const orderData = await PurchaseCredits(selectedPackId)
 
-            const orderData = await response.json()
-
-            if (!response.ok || !orderData.id) {
-                console.error("Failed to create order:", orderData)
-                toast.error(`Failed to create payment order: ${orderData.error || 'Unknown error'}`)
-                setIsProcessing(false)
-                return
-            }
-
-            // 2. Setup Razorpay Options
+            // Setup Razorpay Options
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // From environment variables
-                amount: orderData.amount, // Amount from order response (in paisa)
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                amount: orderData.amount,
                 currency: orderData.currency,
-                name: "IntelliScrape Credits", // Your company name
+                name: "IntelliScrape Credits",
                 description: `Purchase ${pack.name}`,
-                order_id: orderData.id, // From API response
+                order_id: orderData.orderId,
                 handler: function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
                     // Payment successful (Webhook handles credit grant)
                     console.log("Razorpay success response:", response)
                     toast.success("Payment Successful! Credits will be added shortly.")
-                    // Optional: Verify payment signature on backend here for immediate feedback,
-                    // but webhook is the source of truth for granting credits.
-                    // e.g., call another API route `/api/payments/verify-signature`
-                    // router.push('/billing?status=success') // Redirect on success
                     setIsProcessing(false)
                 },
                 prefill: {
                     name: user.fullName || "",
                     email: user.primaryEmailAddress?.emailAddress || "",
-                    contact: user.primaryPhoneNumber?.phoneNumber || "", // Optional
-                },
-                notes: {
-                    // address: "Your Corporate Office Address", // Optional
-                    userId: user.id, // Pass userId for webhook processing
-                    packId: pack.id, // Pass packId for webhook processing/logging
+                    contact: user.primaryPhoneNumber?.phoneNumber || "",
                 },
                 theme: {
-                    color: "#3b82f6", // Match your theme (Tailwind blue-500)
+                    color: "#3b82f6",
                 },
                 modal: {
                     ondismiss: function() {
@@ -119,13 +95,12 @@ function CreditsPurchase() {
                 }
             }
 
-            // 3. Open Razorpay Checkout
+            // Open Razorpay Checkout
             const rzp = new window.Razorpay(options)
 
             rzp.on('payment.failed', function (response: RazorpayErrorResponse) {
                 console.error("Razorpay payment failed:", response.error)
                 toast.error(`Payment Failed: ${response.error.description || response.error.reason}`)
-                // Optionally log detailed error response.error
                 setIsProcessing(false)
             })
 
@@ -150,7 +125,6 @@ function CreditsPurchase() {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {/* Ensure creditsPack is defined or loaded */}
                 <RadioGroup onValueChange={(value) => setSelectedPackId(value as PackId)} value={selectedPackId}>
                     {creditsPack?.map((pack) => (
                         <div key={pack.id} onClick={() => setSelectedPackId(pack.id)} className='flex items-center space-x-3 bg-secondary/50 rounded-lg p-3 hover:bg-secondary cursor-pointer'>
@@ -158,7 +132,7 @@ function CreditsPurchase() {
                             <Label htmlFor={pack.id} className='flex justify-between w-full cursor-pointer'>
                                 <span className='font-medium'>{pack.name} - {pack.label}</span>
                                 <span className='font-bold text-primary'>
-                                    ₹{(pack.price).toFixed(2)} {/* Display INR symbol */}
+                                    ₹{(pack.price).toFixed(2)}
                                 </span>
                             </Label>
                         </div>

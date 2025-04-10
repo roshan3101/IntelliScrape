@@ -5,7 +5,6 @@ import { ExecutionPhaseStatus, WorkflowExecutionStatus } from "@/types/workflow"
 import { ExecutionPhase } from "@prisma/client";
 import { AppNode } from "@/types/appNode";
 import { TaskRegistry } from "./task/registry";
-import { waitFor } from "../helper/WaitFor";
 import { ExecutorRegistry } from "./executor/registry";
 import { Environment, ExecutionEnvironment } from "@/types/executor";
 import { TaskParamType } from "@/types/task";

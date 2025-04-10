@@ -10,7 +10,6 @@ import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
-import Script from 'next/script';
 
 // Initialize Geist Sans font for general text
 const geistSans = Geist({
@@ -50,6 +49,12 @@ export default function RootLayout({
       }}
     >
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            src="https://checkout.razorpay.com/v1/checkout.js"
+            async
+          />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -58,12 +63,6 @@ export default function RootLayout({
           
           {/* Toast notifications component */}
           <Toaster richColors />
-          
-          {/* Razorpay payment integration script */}
-          <Script
-            id="razorpay-checkout-js"
-            src="https://checkout.razorpay.com/v1/checkout.js"
-          />
         </body>
       </html>
     </ClerkProvider>

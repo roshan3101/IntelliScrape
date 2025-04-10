@@ -1,6 +1,4 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { FillInputTask } from "../task/FillInput";
-import { ClickElementTask } from "../task/ClickElement";
 import { ExtractDataWithAiTask } from "../task/ExtractDataWithAi";
 import prisma from "@/lib/prisma";
 import { symmetricDecrypt } from "@/lib/encryption";

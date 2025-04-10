@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 function InvoiceBtn({id}:{id: string}) {
 
     const mutation = useMutation({
-        mutationFn: DownloadInvoice(id),
+        mutationFn: async () => await DownloadInvoice(id),
         onSuccess: (data) => (window.location.href = data as string),
         onError: () => {
             toast.error("Something went wrong")

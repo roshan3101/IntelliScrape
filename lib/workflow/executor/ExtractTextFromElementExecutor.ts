@@ -1,6 +1,4 @@
-import { Environment, ExecutionEnvironment } from "@/types/executor";
-import puppeteer, {} from "puppeteer"
-import { LaunchBrowserTask } from "../task/LaunchBrowser";
+import { ExecutionEnvironment } from "@/types/executor";
 import { ExtractTextFromElementTask } from "../task/ExtractTextFromElement";
 import * as cheerio from "cheerio"
 

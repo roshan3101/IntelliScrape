@@ -1,6 +1,4 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { FillInputTask } from "../task/FillInput";
-import { ClickElementTask } from "../task/ClickElement";
 import { DeliverViaWebhookTask } from "../task/DeliveryViaWebhook";
 
 export async function DeliveryviaWebhookExecutor (environment: ExecutionEnvironment<typeof DeliverViaWebhookTask>) : Promise<boolean> {

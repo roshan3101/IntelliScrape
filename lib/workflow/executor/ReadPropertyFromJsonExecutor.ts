@@ -1,6 +1,4 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { FillInputTask } from "../task/FillInput";
-import { ClickElementTask } from "../task/ClickElement";
 import { ReadPropertyFromJsonTask } from "../task/ReadPropertyFromJson";
 
 export async function ReadPropertyFromJsonExecutor (environment: ExecutionEnvironment<typeof ReadPropertyFromJsonTask>) : Promise<boolean> {

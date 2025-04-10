@@ -1,5 +1,4 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { FillInputTask } from "../task/FillInput";
 import { ClickElementTask } from "../task/ClickElement";
 
 export async function ClickElementExecutor (environment: ExecutionEnvironment<typeof ClickElementTask>) : Promise<boolean> {

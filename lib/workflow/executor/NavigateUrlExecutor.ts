@@ -1,6 +1,4 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { FillInputTask } from "../task/FillInput";
-import { ClickElementTask } from "../task/ClickElement";
 import { NavigateUrlTask } from "../task/NavigateUrl";
 
 export async function NavigateUrlExecutor (environment: ExecutionEnvironment<typeof NavigateUrlTask>) : Promise<boolean> {

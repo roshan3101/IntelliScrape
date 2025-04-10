@@ -1,6 +1,5 @@
 "use client"
 
-import { Input } from '@/components/ui/input'
 import { TaskParam, TaskParamType } from '@/types/task'
 import React, { useCallback } from 'react'
 import StringParam from './param/StringParam'
