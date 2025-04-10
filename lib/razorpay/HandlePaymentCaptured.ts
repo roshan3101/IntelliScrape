@@ -41,11 +41,10 @@ type RazorpayPaymentEntity = {
 // You might base this on creditPackId passed in notes instead
 const getCreditsForAmount = (amountPaisa: number): number => {
   // Simple example: 1 INR = 1 credit (100 paisa = 1 credit)
-  // Replace with your actual pricing tiers
   if (amountPaisa === 50000) return 500; // 500 INR -> 500 credits
   if (amountPaisa === 100000) return 1200; // 1000 INR -> 1200 credits (bonus!)
   if (amountPaisa === 200000) return 2500; // 2000 INR -> 2500 credits
-  // Default or fallback - adjust as needed
+  // Default fallback
   return Math.floor(amountPaisa / 100);
 };
 // --- End credit mapping logic ---

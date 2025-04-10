@@ -3,22 +3,17 @@ import crypto from 'crypto';
 // import { env } from '@/lib/env'; // Assuming env validation
 import { handlePaymentCaptured } from '@/lib/razorpay/HandlePaymentCaptured'; // We will create this next
 
-// If not using env validation, use process.env directly
-const webhookSecret = /* env.RAZORPAY_WEBHOOK_SECRET || */ process.env.RAZORPAY_WEBHOOK_SECRET;
-
-if (!webhookSecret) {
-  console.error('RAZORPAY_WEBHOOK_SECRET is not defined in environment variables.');
-  // Optionally throw an error during startup in production
-}
+// Get the webhook secret from environment variables
+const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
 export async function POST(req: NextRequest) {
-  const signature = req.headers.get('x-razorpay-signature');
-  const body = await req.text(); // Read the raw body text
-
   if (!webhookSecret) {
      console.error('Webhook secret is not configured.');
      return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
+
+  const signature = req.headers.get('x-razorpay-signature');
+  const body = await req.text(); // Read the raw body text
 
   if (!signature) {
     console.warn('Webhook request received without signature.');
