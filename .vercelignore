@@ -1,5 +1,7 @@
-.next/
+.eslintrc.js
+.eslintignore
 node_modules/
+.next/
 out/
 dist/
 build/
