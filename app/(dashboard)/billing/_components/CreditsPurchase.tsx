@@ -34,15 +34,6 @@ interface RazorpayErrorResponse {
     }
 }
 
-// Replace any with proper types
-type OrderResponse = {
-    id: string;
-    amount: number;
-    currency: string;
-    orderId: string;
-    [key: string]: unknown;
-};
-
 function CreditsPurchase() {
     const [selectedPackId, setSelectedPackId] = useState<PackId>(PackId.MEDIUM)
     const [isProcessing, setIsProcessing] = useState(false)

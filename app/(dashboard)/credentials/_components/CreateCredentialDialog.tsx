@@ -4,8 +4,6 @@ import React, { useCallback, useState } from 'react'
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
 
@@ -21,24 +19,19 @@ import {
 
   
 import { Button } from '@/components/ui/button';
-import { Layers2Icon, Loader2, ShieldEllipsis } from 'lucide-react';
+import { Loader2, ShieldEllipsis } from 'lucide-react';
 import CustomDialogHeader from '@/components/CustomDialogHeader';
 import { useForm } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
-import { createWorkflowSchema, createWorkflowSchemaType } from '@/schema/workflow';
-import { z } from 'zod';
+import { createCredentialSchema, createCredentialSchemaType } from '@/schema/credential';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
-import { CreateWorkflow } from '@/actions/workflows/createWorkflow';
 import { toast } from 'sonner';
-import { useRouter } from "next/navigation";
-import { createCredentialSchema, createCredentialSchemaType } from '@/schema/credential';
 import { CreateCredential } from '@/actions/credentials/CreateCredentials';
 
 function CreateCredentialDialog({triggerText}:{
     triggerText? : string
 }) {
-    const router = useRouter();
     const [open,setOpen] = useState(false);
 
     const form = useForm<createCredentialSchemaType>({
