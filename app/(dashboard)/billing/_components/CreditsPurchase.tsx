@@ -26,10 +26,12 @@ function CreditsPurchase() {
     const [isAddingCredits, setIsAddingCredits] = useState(false)
     const { user } = useUser() // Get user details for prefill
 
-    // Function to directly add credits (for testing)
-    const addCreditsDirectly = async (packId: string, credits: number) => {
+    // Function to directly add credits
+    const addCreditsDirectly = async (packId: string, credits: number, reason: string = "Direct purchase") => {
         try {
             setIsAddingCredits(true);
+            console.log(`Adding ${credits} credits for pack ${packId}. Reason: ${reason}`);
+            
             const response = await fetch('/api/user/credits', {
                 method: 'POST',
                 headers: {
@@ -37,7 +39,7 @@ function CreditsPurchase() {
                 },
                 body: JSON.stringify({
                     credits,
-                    reason: `Test purchase of ${packId} pack`
+                    reason
                 }),
             });
 
@@ -53,9 +55,11 @@ function CreditsPurchase() {
             });
             
             console.log('Credits added successfully:', data);
+            return true;
         } catch (error) {
             console.error('Error adding credits:', error);
             toast.error('Failed to add credits. Please try again.');
+            return false;
         } finally {
             setIsAddingCredits(false);
         }
@@ -77,14 +81,20 @@ function CreditsPurchase() {
         toast.info(`Preparing your ${pack.name} purchase...`)
         console.log(`Initiating purchase for ${pack.name} (ID: ${pack.id}, Credits: ${pack.credits}, Price: ₹${pack.price})`)
 
-        // If in test environment and direct credit addition is requested
-        if (IS_TEST_ENV) {
-            console.log('TEST ENVIRONMENT: Adding credits directly without payment');
-            await addCreditsDirectly(pack.id, pack.credits);
+        // Add credits immediately for every purchase (test or production)
+        const creditSuccess = await addCreditsDirectly(
+            pack.id, 
+            pack.credits, 
+            IS_TEST_ENV ? `Test purchase of ${pack.name}` : `Purchase of ${pack.name} (pending payment)`
+        );
+
+        // If credit addition failed or in test environment, finish here
+        if (!creditSuccess || IS_TEST_ENV) {
             setIsProcessing(false);
             return;
         }
 
+        // For production, continue with Razorpay flow
         if (!window.Razorpay) {
             toast.error("Payment gateway is not loaded. Please refresh the page.")
             console.error("Razorpay script not loaded")
@@ -130,20 +140,10 @@ function CreditsPurchase() {
                     // Payment successful
                     console.log("Razorpay success response:", response)
                     
-                    // In test environment, also add credits directly (don't wait for webhook)
-                    if (IS_TEST_ENV) {
-                        console.log('TEST ENVIRONMENT: Adding credits directly after payment');
-                        await addCreditsDirectly(pack.id, pack.credits);
-                    } else {
-                        toast.success(
-                            `Payment Successful! ${pack.credits} credits will be added to your account shortly.`,
-                            { duration: 6000 }
-                        )
-                        toast.info(
-                            "Note: It may take a few moments for the credits to appear in your account.",
-                            { duration: 6000 }
-                        )
-                    }
+                    toast.success(
+                        `Payment completed successfully!`,
+                        { duration: 6000 }
+                    )
                     
                     setIsProcessing(false)
                 },
@@ -205,7 +205,7 @@ function CreditsPurchase() {
                 </CardTitle>
                 <CardDescription>
                     Select the number of credits you want to purchase
-                    {IS_TEST_ENV && <div className="mt-1 text-orange-500">In test mode, credits are added directly without actual payment</div>}
+                    {IS_TEST_ENV && <div className="mt-1 text-orange-500">In test mode, credits are added immediately without payment</div>}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -229,7 +229,7 @@ function CreditsPurchase() {
                     {isProcessing || isAddingCredits ? (
                         <>
                             <Loader2 className='mr-2 h-5 w-5 animate-spin' />
-                            {isAddingCredits ? 'Adding Credits...' : 'Processing...'}
+                            {isAddingCredits ? 'Adding Credits...' : 'Processing Payment...'}
                         </>
                     ) : (
                         <>
