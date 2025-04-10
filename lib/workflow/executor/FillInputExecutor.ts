@@ -17,8 +17,6 @@ export async function FillInputExecutor(environment: ExecutionEnvironment<typeof
         
     } catch (error: unknown) {
         environment.log.error(error instanceof Error ? error.message : String(error));
-    } catch (error:any) {
-        environment.log.error(error.message);
-        return false
+        return false;
     }
 }

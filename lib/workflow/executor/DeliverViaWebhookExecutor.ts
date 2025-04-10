@@ -1,30 +1,30 @@
 import { ExecutionEnvironment } from "@/types/executor";
-import { DeliverViaWebhookTask } from "../task/DeliverViaWebhook";
+import { DeliverViaWebhookTask } from "../task/DeliveryViaWebhook";
 
 export async function DeliverViaWebhookExecutor(environment: ExecutionEnvironment<typeof DeliverViaWebhookTask>): Promise<boolean> {
     try {
-        const url = environment.getInput("URL");
-        if(!url){
-            environment.log.error("input-> url not defined");
+        const targetUrl = environment.getInput("Target URL");
+        if(!targetUrl){
+            environment.log.error("input-> targetUrl not defined");
         }
-        const data = environment.getInput("Data");
-        if(!data){
-            environment.log.error("input-> data not defined");
+        const body = environment.getInput("Body");
+        if(!body){
+            environment.log.error("input-> body not defined");
         }
 
-        const response = await fetch(url, {
+        const response = await fetch(targetUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: data,
+            body: JSON.stringify(body),
         });
 
         if(!response.ok){
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        environment.log.info(`Data delivered to ${url}`);
+        environment.log.info(`Data delivered to ${targetUrl}`);
         return true;
         
     } catch (error: unknown) {

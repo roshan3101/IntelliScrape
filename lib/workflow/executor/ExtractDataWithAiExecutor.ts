@@ -6,13 +6,19 @@ import OpenAI from "openai"
 
 export async function ExtractDataWithAiExecutor(environment: ExecutionEnvironment<typeof ExtractDataWithAiTask>): Promise<boolean> {
     try {
-        const html = environment.getInput("HTML");
-        if(!html){
-            environment.log.error("input-> html not defined");
+        const credentials = environment.getInput("Credentials");
+        if(!credentials){
+            environment.log.error("input-> credentials not defined");
         }
-        const schema = environment.getInput("Schema");
-        if(!schema){
-            environment.log.error("input-> schema not defined");
+        
+        const prompt = environment.getInput("Prompt");
+        if(!prompt){
+            environment.log.error("input-> prompt not defined");
+        }
+        
+        const content = environment.getInput("Content");
+        if(!content){
+            environment.log.error("input-> content not defined");
         }
 
         // TODO: Implement AI extraction
