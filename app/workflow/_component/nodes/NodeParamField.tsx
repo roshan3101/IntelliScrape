@@ -30,7 +30,13 @@ function NodeParamField({param,nodeId,disabled}:{param:TaskParam;nodeId:string;d
     switch (param.type){
         case TaskParamType.STRING:
             return(
-                <StringParam param={param} value={value} updateNodeParamValue={updateNodeParamValue} disabled={disabled} />
+                <StringParam 
+                    value={value || ""} 
+                    onChange={updateNodeParamValue} 
+                    placeholder={param.placeholder}
+                    label={param.name}
+                    description={param.description}
+                />
             )
             
         case TaskParamType.BROWSER_INSTANCE:
