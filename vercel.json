@@ -3,8 +3,5 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "framework": null,
-  "outputDirectory": ".next",
-  "env": {
-    "DATABASE_URL": "@database_url"
-  }
+  "outputDirectory": ".next"
 } 
