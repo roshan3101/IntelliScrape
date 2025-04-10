@@ -1,21 +1,31 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
 
-// Initialize Razorpay with environment variables
-let razorpay: Razorpay | undefined;
+// Initialize Razorpay with environment variables - lazy loading
+let razorpay: any = undefined;
 
-try {
-    razorpay = new Razorpay({
-        key_id: process.env.RAZORPAY_KEY_ID || "",
-        key_secret: process.env.RAZORPAY_KEY_SECRET || "",
-    });
-} catch (error) {
-    console.error("Error initializing Razorpay:", error);
-    // We'll handle API calls safely below
-}
+// Only initialize in production or when keys are available
+const initRazorpay = async () => {
+    if (razorpay) return razorpay;
+    
+    if (process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+        try {
+            // Dynamically import to avoid build-time errors
+            const { default: Razorpay } = await import('razorpay');
+            razorpay = new Razorpay({
+                key_id: process.env.RAZORPAY_KEY_ID,
+                key_secret: process.env.RAZORPAY_KEY_SECRET,
+            });
+            return razorpay;
+        } catch (error) {
+            console.error("Error initializing Razorpay:", error);
+            return null;
+        }
+    }
+    return null;
+};
 
 // Define types for Razorpay responses
 interface RazorpayOrder {
@@ -44,8 +54,11 @@ interface RazorpayPayment {
 
 export async function POST(req: Request) {
     try {
-        // If Razorpay isn't initialized, return an error in non-production environments
-        if (!razorpay && process.env.NODE_ENV !== "production") {
+        // Get razorpay instance
+        const rzp = await initRazorpay();
+        
+        // If Razorpay isn't initialized, return an error
+        if (!rzp && process.env.NODE_ENV === "production") {
             return NextResponse.json(
                 { error: "Razorpay not configured" },
                 { status: 500 }
@@ -66,7 +79,7 @@ export async function POST(req: Request) {
         }
 
         // Verify the webhook signature
-        const secret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+        const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
         const expectedSignature = crypto
             .createHmac("sha256", secret)
             .update(body)
@@ -83,18 +96,11 @@ export async function POST(req: Request) {
         const eventType = event.event;
 
         // Handle successful payment
-        if (eventType === "payment.captured") {
+        if (eventType === "payment.captured" && rzp) {
             const payment = event.payload.payment.entity as RazorpayPayment;
             const orderId = payment.order_id;
 
-            if (!razorpay) {
-                return NextResponse.json(
-                    { error: "Razorpay not configured" },
-                    { status: 500 }
-                );
-            }
-
-            const order = await razorpay.orders.fetch(orderId) as unknown as RazorpayOrder;
+            const order = await rzp.orders.fetch(orderId) as unknown as RazorpayOrder;
             
             if (!order?.notes?.userId || !order?.notes?.credits) {
                 return NextResponse.json(
