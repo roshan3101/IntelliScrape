@@ -11,16 +11,20 @@ import ExecutionStatusChart from './_components/ExecutionStatusChart';
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod';
 import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: { month?: string; year?: string };
-}) {
+interface HomePageProps {
+  params: {};
+  searchParams: {
+    month?: string;
+    year?: string;
+  };
+}
+
+export default function HomePage({ searchParams }: HomePageProps) {
   const currentDate = new Date();
   const {month, year} = searchParams;
-  const period :Period = {
-    month: month? parseInt(month) : currentDate.getMonth(),
-    year: year? parseInt(year) : currentDate.getFullYear(),
+  const period: Period = {
+    month: month ? parseInt(month) : currentDate.getMonth(),
+    year: year ? parseInt(year) : currentDate.getFullYear(),
   }
 
 
@@ -89,19 +93,17 @@ function StatsCardSkeleton(){
 }
 
 async function StatsExecutionStatus({selectedPeriod}:{selectedPeriod:Period}){
-  const data =await GetWorkflowExecutionStats(selectedPeriod);
+  const data = await GetWorkflowExecutionStats(selectedPeriod);
 
   return (
     <ExecutionStatusChart data={data} />
   )
-
 }
 
 async function CreditsUsageInPeriod({selectedPeriod}:{selectedPeriod:Period}){
-  const data =await GetCreditsUsageInPeriod(selectedPeriod);
+  const data = await GetCreditsUsageInPeriod(selectedPeriod);
 
   return (
     <CreditUsageChart data={data} title="Daily credits spent" description="Daily credits consumed in selected period" />
   )
-
 }
