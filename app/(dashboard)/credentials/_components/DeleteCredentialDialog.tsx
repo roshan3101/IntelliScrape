@@ -1,7 +1,6 @@
 "use client" 
 
 import { DeleteCredential } from "@/actions/credentials/DeleteCredential";
-import { DeleteWorkflow } from "@/actions/workflows/deleteWorkflow";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMutation } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
   
 interface Props {
@@ -39,6 +38,10 @@ function DeleteCredentialDialog({name}:Props) {
         }
     })
 
+    const onSubmit = useCallback(() => {
+        toast.loading("Deleting credential...",{id: "delete-credential"});
+        deleteMutation.mutate(name);
+    },[deleteMutation, name]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -65,10 +68,7 @@ function DeleteCredentialDialog({name}:Props) {
             </AlertDialogHeader>
             <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setConfirmText("")}>Cancel</AlertDialogCancel>
-                <AlertDialogAction disabled={confirmText !== name || deleteMutation.isPending} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={(e) => {
-                    toast.loading("Deleting credential...",{id: name});
-                    deleteMutation.mutate(name);
-                }}>Delete</AlertDialogAction>
+                <AlertDialogAction disabled={confirmText !== name || deleteMutation.isPending} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={onSubmit}>Delete</AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
