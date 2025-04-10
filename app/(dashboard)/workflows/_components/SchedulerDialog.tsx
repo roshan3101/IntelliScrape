@@ -1,30 +1,44 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import {
-  Dialog,
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+
+import { Button } from '@/components/ui/button';
+import { CalendarIcon, Loader2 } from 'lucide-react';
+import CustomDialogHeader from '@/components/CustomDialogHeader';
+import { useForm } from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod"
+import { schedulerSchema, schedulerSchemaType } from '@/schema/workflow';
+import { Input } from '@/components/ui/input';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { UpdateWorkflow } from '@/actions/workflows/updateWorkflow';
+import { cn } from '@/lib/utils';
+import {
   DialogClose,
-  DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
-import { CalendarIcon, ClockIcon, TriangleAlertIcon, Workflow } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import CustomDialogHeader from '@/components/CustomDialogHeader'
-import { Input } from '@/components/ui/input'
-import { useMutation } from '@tanstack/react-query'
-import { UpdateWorkflowCron } from '@/actions/workflows/updateWorkflowCron'
-import { toast } from 'sonner'
+import { ClockIcon, TriangleAlertIcon, Workflow } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
+import { RemoveWorkflowSchedule } from '@/actions/workflows/RemoveWorkflowSchedule'
 import cronstrue from "cronstrue"
 import { CronExpressionParser } from "cron-parser"
-import { RemoveWorkflowSchedule } from '@/actions/workflows/RemoveWorkflowSchedule'
-import { Separator } from '@/components/ui/separator'
-
-
 
 function SchedulerDialog(props:{cron:string | null;workflowId: string}) {
 
@@ -33,7 +47,7 @@ function SchedulerDialog(props:{cron:string | null;workflowId: string}) {
   const [readableCron,setReadableCron] = useState("");
 
   const mutation = useMutation({
-    mutationFn: UpdateWorkflowCron,
+    mutationFn: UpdateWorkflow,
     onSuccess:() => {
       toast.success("schedule updated successfully",{id: "cron"});
     },
