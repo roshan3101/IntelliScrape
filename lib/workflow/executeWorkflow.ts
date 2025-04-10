@@ -5,7 +5,7 @@ import { ExecutionPhaseStatus, WorkflowExecutionStatus } from "@/types/workflow"
 import { ExecutionPhase } from "@prisma/client";
 import { AppNode } from "@/types/appNode";
 import { TaskRegistry } from "./task/registry";
-import { ExecutorRegistry } from "./executor";
+import { ExecutorRegistry } from "./executor/registry";
 import { Environment, ExecutionEnvironment } from "@/types/executor";
 import { TaskParamType } from "@/types/task";
 import { Browser, Page } from "puppeteer";
@@ -13,49 +13,38 @@ import { Edge } from "@xyflow/react";
 import { LogCollector } from "@/types/log";
 import { createLogCollector } from "../log";
 
-interface WorkflowExecutionWithPhases {
-    id: string;
-    workflowId: string;
-    userId: string;
-    definition: string;
-    phases: ExecutionPhase[];
-    workflow: {
-        id: string;
-    };
-}
-
-export async function ExecuteWorkflow(executionId: string, nextRunAt?: Date) {
+export async function ExecuteWorkflow(executionId: string, nextRunAt? : Date){
     const execution = await prisma.workflowExecution.findUnique({
-        where: { id: executionId },
+        where: { id: executionId},
         include: { workflow: true, phases: true },
     });
-
-    if (!execution) {
+    if(!execution){
         throw new Error("execution not found");
     }
-
     const edges = JSON.parse(execution.definition).edges as Edge[];
-    const environment: Environment = { phases: {} };
+
+    const environment : Environment = { phases: {}};
 
     await initializeWorkflowExecution(executionId, execution.workflowId, nextRunAt);
+
     await initialisePhaseStatus(execution);
 
     let creditsConsumed = 0;
     let executionFailed = false;
-
-    for (const phase of execution.phases) {
-        const phaseExecution = await executionWorkflowPhase(phase, environment, edges, execution.userId);
+    for(const phase of execution.phases){
+        const phaseExecution = await executionWorkflowPhase(phase,environment,edges,execution.userId);
         creditsConsumed += phaseExecution.creditsConsumed;
-        if (!phaseExecution.success) {
+        if(!phaseExecution.success) {
             executionFailed = true;
             break;
         }
     }
+    
+    await finalizeWorkflowExecution(executionId,execution.workflowId,executionFailed,creditsConsumed)
 
-    await finalizeWorkflowExecution(executionId, execution.workflowId, executionFailed, creditsConsumed);
     await cleanUpEnvironment(environment);
 
-    revalidatePath("/workflow/runs");
+    revalidatePath("/workflow/runs")
 }
 
 async function initializeWorkflowExecution(executionId: string, workflowId: string, nextRunAt?: Date){
@@ -126,42 +115,41 @@ async function finalizeWorkflowExecution(
 
 }
 
-async function executionWorkflowPhase(
-    phase: ExecutionPhase,
-    environment: Environment,
-    edges: Edge[],
-    userId: string
-) {
+async function executionWorkflowPhase(phase: ExecutionPhase,environment: Environment,edges:Edge[],userId: string){
     const logCollector = createLogCollector();
     const startedAt = new Date();
     const node = JSON.parse(phase.node) as AppNode;
 
-    setUpEnvironmentForPhase(node, environment, edges);
+    setUpEnvironmentForPhase(node,environment,edges);
+
 
     await prisma.executionPhase.update({
-        where: { id: phase.id },
+        where: {id: phase.id },
         data: {
             status: ExecutionPhaseStatus.RUNNING,
             startedAt,
-            inputs: JSON.stringify(environment.phases[node.id]?.inputs || {})
+            inputs: JSON.stringify(environment.phases[node.id].inputs)
         }
     });
 
     const creditsRequired = TaskRegistry[node.data.type].credits;
-    console.log(`Executing phase ${phase.name} with ${creditsRequired} credits required`);
+    console.log(
+        `Executing phase ${phase.name} with ${creditsRequired} credits required`
+    );
 
     let success = await decrementCredits(userId, creditsRequired, logCollector);
-    const creditsConsumed = success ? creditsRequired : 0;
-    
-    if (success) {
-        success = await executePhase(phase, node, environment, logCollector);
+    const creditsConsumed = success? creditsRequired : 0;
+    if(success){
+        success = await executePhase(phase,node,environment,logCollector);
     }
 
-    const outputs = environment.phases[node.id]?.outputs || {};
 
-    await finalizePhase(phase.id, success, outputs, logCollector, creditsConsumed);
+    const outputs = environment.phases[node.id].outputs;
+
+    await finalizePhase (phase.id, success,outputs,logCollector,creditsConsumed);
 
     return { success, creditsConsumed };
+
 }
 
 async function finalizePhase(phaseId: string, success: boolean,outputs: any,logCollector:LogCollector,creditsConsumed: number) {
@@ -208,36 +196,29 @@ async function executePhase(
     return await runFn(executionEnvironment);
 }
 
-function setUpEnvironmentForPhase(node: AppNode, environment: Environment, edges: Edge[]) {
-    if (!environment.phases[node.id]) {
-        environment.phases[node.id] = { inputs: {}, outputs: {} };
-    }
-
+function setUpEnvironmentForPhase(node:AppNode, environment:Environment,edges:Edge[]){
+    environment.phases[node.id] = { inputs: {}, outputs: {}};
     const inputs = TaskRegistry[node.data.type].inputs;
-    for (const input of inputs) {
-        if (input.type === TaskParamType.BROWSER_INSTANCE) continue;
-
-        const inputValue = node.data.inputs?.[input.name];
-        if (inputValue) {
+    for(const input of inputs){
+        if(input.type === TaskParamType.BROWSER_INSTANCE) continue; 
+        const inputValue = node.data.inputs[input.name];
+        if(inputValue){
             environment.phases[node.id].inputs[input.name] = inputValue;
             continue;
         }
 
         const connectedEdge = edges.find(edge => edge.targetHandle === input.name);
-        if (!connectedEdge) {
-            console.error("Missing edge for input", input.name, "node id", node.id);
-            continue;
-        }
-
-        const sourceNodeId = connectedEdge.source;
-        const sourceHandle = connectedEdge.sourceHandle;
         
-        if (!sourceHandle || !environment.phases[sourceNodeId]?.outputs) {
-            console.error("Invalid edge connection", connectedEdge);
+        if(!connectedEdge){
+            console.error("Missing edge for input",input.name,"node id",node.id);
             continue;
         }
 
-        environment.phases[node.id].inputs[input.name] = environment.phases[sourceNodeId].outputs[sourceHandle];
+        const outputValue = environment.phases[connectedEdge.source].outputs[connectedEdge.sourceHandle!]
+
+        environment.phases[node.id].inputs[input.name] = outputValue
+
+        
     }
 }
 

@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { ReadPropertyFromJsonTask } from "../task/ReadPropertyFromJson";
 
-export async function ReadPropertyFromJsonExecutor(environment: ExecutionEnvironment<typeof ReadPropertyFromJsonTask>): Promise<boolean> {
+export async function ReadPropertyFromJsonExecutor (environment: ExecutionEnvironment<typeof ReadPropertyFromJsonTask>) : Promise<boolean> {
     try {
         const jsonData = environment.getInput("JSON");
         if(!jsonData){
@@ -20,11 +20,11 @@ export async function ReadPropertyFromJsonExecutor(environment: ExecutionEnviron
             return false;
         }
 
-        environment.setOutput("Property value", propertyValue);
+        environment.setOutput("Property value",propertyValue)
         return true;
         
-    } catch (error: unknown) {
-        environment.log.error(error instanceof Error ? error.message : String(error));
-        return false;
+    } catch (error:any) {
+        environment.log.error(error.message);
+        return false
     }
 }

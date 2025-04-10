@@ -3,12 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "setup-db": "node setup-db.js",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "postinstall": "prisma generate"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.12",
@@ -36,7 +34,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "lucide-react": "^0.486.0",
-    "next": "^15.2.4",
+    "next": "15.2.4",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.8.16",
     "openai": "^4.92.1",

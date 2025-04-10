@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { ScrollToElementTask } from "../task/ScrollToElement";
 
-export async function ScrollToElementExecutor(environment: ExecutionEnvironment<typeof ScrollToElementTask>): Promise<boolean> {
+export async function ScrollToElementExecutor (environment: ExecutionEnvironment<typeof ScrollToElementTask>) : Promise<boolean> {
     try {
         const selector = environment.getInput("Selector");
         if(!selector){
@@ -16,12 +16,12 @@ export async function ScrollToElementExecutor(environment: ExecutionEnvironment<
 
             const top = element.getBoundingClientRect().top + window.scrollY;
             window.scrollTo({top});
-        }, selector);
+        },selector)
 
         return true;
         
-    } catch (error: unknown) {
-        environment.log.error(error instanceof Error ? error.message : String(error));
-        return false;
+    } catch (error:any) {
+        environment.log.error(error.message);
+        return false
     }
 }

@@ -2,7 +2,7 @@ import { getAppUrl } from "@/lib/helper/appUrl";
 import prisma from "@/lib/prisma";
 import { WorkflowStatus } from "@/types/workflow";
 
-export async function GET() {
+export async function Get(req:Request) {
     const now = new Date();
     const workflows = await prisma.workflow.findMany({
         select: { id: true},

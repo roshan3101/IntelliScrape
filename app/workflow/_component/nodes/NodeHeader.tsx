@@ -12,21 +12,7 @@ import React from 'react'
 
 function NodeHeader({taskType,nodeId}:{taskType:TaskType;nodeId:string}) {
     const task = TaskRegistry[taskType];
-    const { deleteElements, getNode, addNodes, setCenter } = useReactFlow();
-
-    const handleDoubleClick = () => {
-        const node = getNode(nodeId);
-        if (!node?.position || !node?.measured?.width || !node?.measured?.height) return;
-        
-        const x = node.position.x + node.measured.width / 2;
-        const y = node.position.y + node.measured.height / 2;
-        
-        setCenter(x, y, {
-            zoom: 1,
-            duration: 500,
-        });
-    };
-
+    const { deleteElements, getNode, addNodes } = useReactFlow();
   return (
     <div className='flex items-center gap-2 p-2'>
         <task.icon size={16} />

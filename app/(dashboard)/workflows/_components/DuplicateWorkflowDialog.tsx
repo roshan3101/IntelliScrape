@@ -4,10 +4,13 @@ import React, { useCallback, useState } from 'react'
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
+  } from "@/components/ui/dialog"
 
-import {
+  import {
     Form,
     FormControl,
     FormDescription,
@@ -15,23 +18,28 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form"
+  } from "@/components/ui/form"
 
+  
 import { Button } from '@/components/ui/button';
 import { CopyIcon, Layers2Icon, Loader2 } from 'lucide-react';
 import CustomDialogHeader from '@/components/CustomDialogHeader';
 import { useForm } from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod"
-import { duplicateWorkflowSchema, duplicateWorkflowSchemaType } from '@/schema/workflow';
+import { createWorkflowSchema, createWorkflowSchemaType, duplicateWorkflowSchema, duplicateWorkflowSchemaType } from '@/schema/workflow';
+import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
+import { CreateWorkflow } from '@/actions/workflows/createWorkflow';
 import { toast } from 'sonner';
+import { useRouter } from "next/navigation";
 import { DuplicateWorkflow } from '@/actions/workflows/DuplicateWorkflow';
 import { cn } from '@/lib/utils';
 
 function DuplicateWorkflowsDialog({workflowId}:{
     workflowId? : string
 }) {
+    const router = useRouter();
     const [open,setOpen] = useState(false);
 
     const form = useForm<duplicateWorkflowSchemaType>({

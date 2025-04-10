@@ -14,6 +14,7 @@ import { TaskType } from "@/types/task";
 import { WorkflowStatus } from "@/types/workflow";
 import { auth } from "@clerk/nextjs/server";
 import { Edge } from "@xyflow/react";
+import { redirect } from "next/navigation";
 
 /**
  * Creates a new workflow with initial configuration

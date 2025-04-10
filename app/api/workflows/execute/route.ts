@@ -9,7 +9,6 @@ import { TaskRegistry } from "@/lib/workflow/task/registry";
 import { ExecutionPhaseStatus, WorkflowExecutionPlan, WorkflowExecutionStatus, WorkflowExecutionTrigger } from "@/types/workflow";
 import { timingSafeEqual } from "crypto";
 import { CronExpressionParser } from "cron-parser"
-import { NextResponse } from "next/server";
 
 /**
  * Validates the API secret using timing-safe comparison
@@ -103,10 +102,7 @@ export async function GET(request:Request) {
         // Execute the workflow
         await ExecuteWorkflow(execution.id,nextRun);
         return new Response(null, {status: 200});
-    } catch {
-        return NextResponse.json(
-            { error: "Failed to execute workflow" },
-            { status: 500 }
-        );
+    } catch (error) {
+        return Response.json({error: "Internal server error"},{status: 500});
     }
 }

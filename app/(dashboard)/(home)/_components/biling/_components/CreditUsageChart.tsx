@@ -1,22 +1,20 @@
 "use client"
 
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod'
+import { GetWorkflowExecutionStats } from '@/actions/analytics/GetWorkflowExecutionStats'
 import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
-import { ChartColumnStackedIcon } from 'lucide-react'
+import { ChartColumnStackedIcon, Layers2 } from 'lucide-react'
   
 import React from 'react'
-import {
-  Bar,
-  BarChart,
-  XAxis,
-} from "recharts"
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 
 type ChartData = Awaited<ReturnType<typeof GetCreditsUsageInPeriod>>
 
@@ -46,6 +44,7 @@ function CreditUsageChart({data,title,description}:{data:ChartData;title:string;
         <CardContent>
             <ChartContainer config={chartConfig} className='max-h-[200px] w-full'>
                 <BarChart data={data} height={200} accessibilityLayer margin={{ top: 20}}>
+                    <CartesianGrid vertical={false} />
                     <XAxis dataKey={"date"} tickLine={false} axisLine={false} tickMargin={8} minTickGap={32} tickFormatter={value => {
                         const date = new Date(value);
                         return date.toLocaleDateString("en-US",{
