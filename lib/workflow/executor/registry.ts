@@ -28,8 +28,8 @@ export const ExecutorRegistry: RegistryType = {
     CLICK_ELEMENT: ClickElementExecutor,
     WAIT_FOR_ELEMENT: WaitForElementExecutor,
     DELIVER_VIA_WEBHOOK: DeliverViaWebhookExecutor,
-    EXTRACT_DATA_WITH_AI:ExtractDataWithAiExecutor,
-    READ_PROPERTY_FROM_JSON:ReadPropertyFromJsonExecutor,
+    EXTRACT_DATA_WITH_AI: ExtractDataWithAiExecutor,
+    READ_PROPERTY_FROM_JSON: ReadPropertyFromJsonExecutor,
     ADD_PROPERTY_TO_JSON: AddPropertyToJsonExecutor,
     NAVIGATE_URL: NavigateUrlExecutor,
     SCROLL_To_ELEMENT: ScrollToElementExecutor

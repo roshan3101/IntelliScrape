@@ -4,17 +4,27 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
 
-// Initialize Razorpay
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
+// Initialize Razorpay with environment variables
+let razorpay: Razorpay | undefined;
+
+try {
+    razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID || "",
+        key_secret: process.env.RAZORPAY_KEY_SECRET || "",
+    });
+} catch (error) {
+    console.error("Error initializing Razorpay:", error);
+    // We'll handle API calls safely below
+}
 
 // Define types for Razorpay responses
 interface RazorpayOrder {
     id: string;
+    entity: string;
     amount: number;
     currency: string;
+    receipt: string;
+    status: string;
     notes: {
         userId: string;
         packId: string;
@@ -23,61 +33,91 @@ interface RazorpayOrder {
 }
 
 interface RazorpayPayment {
+    entity: string;
     id: string;
+    order_id: string;
     amount: number;
     currency: string;
-    order_id: string;
+    status: string;
+    method: string;
 }
 
 export async function POST(req: Request) {
-    const body = await req.text();
-    const headersList = await headers();
-    const signature = headersList.get("x-razorpay-signature");
+    try {
+        // If Razorpay isn't initialized, return an error in non-production environments
+        if (!razorpay && process.env.NODE_ENV !== "production") {
+            return NextResponse.json(
+                { error: "Razorpay not configured" },
+                { status: 500 }
+            );
+        }
 
-    if (!signature) {
-        return new NextResponse("No signature", { status: 400 });
-    }
+        const body = await req.text();
+        const headersList = headers();
+        const signature = headersList.get("x-razorpay-signature");
 
-    // Verify the webhook signature
-    const expectedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!)
-        .update(body)
-        .digest("hex");
+        // Verify webhook signature
+        if (!signature || !process.env.RAZORPAY_WEBHOOK_SECRET) {
+            console.error("Missing signature or webhook secret");
+            return NextResponse.json(
+                { error: "Invalid request: missing signature" },
+                { status: 400 }
+            );
+        }
 
-    if (signature !== expectedSignature) {
-        return new NextResponse("Invalid signature", { status: 400 });
-    }
+        // Verify the webhook signature
+        const secret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+        const expectedSignature = crypto
+            .createHmac("sha256", secret)
+            .update(body)
+            .digest("hex");
 
-    const event = JSON.parse(body);
+        if (expectedSignature !== signature) {
+            return NextResponse.json(
+                { error: "Invalid signature" },
+                { status: 400 }
+            );
+        }
 
-    // Handle successful payment
-    if (event.event === "payment.captured") {
-        const payment = event.payload.payment.entity as RazorpayPayment;
-        const order = payment.order_id;
+        const event = JSON.parse(body);
+        const eventType = event.event;
 
-        try {
-            // Get the order details
-            const orderDetails = await razorpay.orders.fetch(order);
-            const notes = orderDetails.notes as unknown as RazorpayOrder['notes'];
-            
-            if (!notes || !notes.userId || !notes.credits) {
-                throw new Error("Invalid order notes");
+        // Handle successful payment
+        if (eventType === "payment.captured") {
+            const payment = event.payload.payment.entity as RazorpayPayment;
+            const orderId = payment.order_id;
+
+            if (!razorpay) {
+                return NextResponse.json(
+                    { error: "Razorpay not configured" },
+                    { status: 500 }
+                );
             }
 
-            const { userId, credits } = notes;
+            const order = await razorpay.orders.fetch(orderId) as unknown as RazorpayOrder;
+            
+            if (!order?.notes?.userId || !order?.notes?.credits) {
+                return NextResponse.json(
+                    { error: "Invalid order data" },
+                    { status: 400 }
+                );
+            }
+
+            const userId = order.notes.userId;
+            const credits = parseInt(order.notes.credits);
 
             // Update user's credits
             await prisma.userBalance.upsert({
                 where: { userId },
-                create: {
-                    userId,
-                    credits: parseInt(credits)
-                },
                 update: {
                     credits: {
-                        increment: parseInt(credits)
-                    }
-                }
+                        increment: credits,
+                    },
+                },
+                create: {
+                    userId,
+                    credits,
+                },
             });
 
             // Create a purchase record
@@ -86,18 +126,21 @@ export async function POST(req: Request) {
                     userId,
                     purchaseId: payment.id,
                     description: `Purchased ${credits} credits`,
-                    amount: payment.amount / 100, // Convert from paise to rupees
+                    amount: payment.amount / 100, // Convert from paisa to rupees
                     currency: payment.currency,
                     status: "completed"
                 }
             });
 
-            return new NextResponse("Success", { status: 200 });
-        } catch (error) {
-            console.error("Error processing payment:", error);
-            return new NextResponse("Error processing payment", { status: 500 });
+            return NextResponse.json({ success: true });
         }
-    }
 
-    return new NextResponse("Event not handled", { status: 200 });
+        return NextResponse.json({ received: true });
+    } catch (error) {
+        console.error("Webhook error:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
+    }
 } 
