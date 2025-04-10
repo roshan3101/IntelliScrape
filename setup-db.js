@@ -21,6 +21,15 @@ function runCommand(command) {
 
 async function setupDatabase() {
   try {
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.error('ERROR: DATABASE_URL environment variable is not set!');
+      console.error('Please set the DATABASE_URL environment variable in your Vercel project settings.');
+      process.exit(1);
+    }
+
+    console.log('Using database URL:', process.env.DATABASE_URL.replace(/:.+@/, ':****@')); // Hide password in logs
+
     // Delete existing migrations folder if it exists
     const migrationsPath = path.join(__dirname, 'prisma', 'migrations');
     if (fs.existsSync(migrationsPath)) {
@@ -28,17 +37,13 @@ async function setupDatabase() {
       fs.rmSync(migrationsPath, { recursive: true, force: true });
     }
 
-    // Create new initial migration
-    console.log('Creating new migration...');
-    await runCommand('npx prisma migrate dev --name init --create-only');
-
     // Generate Prisma client
     console.log('Generating Prisma client...');
     await runCommand('npx prisma generate');
 
-    // Apply migrations to the database
-    console.log('Applying migrations...');
-    await runCommand('npx prisma migrate deploy');
+    // Push schema to database (non-interactive)
+    console.log('Pushing schema to database...');
+    await runCommand('npx prisma db push --accept-data-loss --force-reset');
 
     console.log('Database setup completed successfully!');
   } catch (error) {
