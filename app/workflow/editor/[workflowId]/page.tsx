@@ -1,21 +1,28 @@
-'use client'
-import { useParams } from 'next/navigation';
 import prisma from '@/lib/prisma';
-// import { auth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import Editor from '../../_component/Editor';
+import { Metadata } from 'next';
+import { Workflow } from '@prisma/client';
 
-export default async function Page() {
-  // const { userId } = await auth();
-  const { workflowId } = useParams();
+// Types for Next.js 15
+type PageParams = Promise<{ workflowId: string }>;
 
-  // if (!userId) {
-  //   return <div>unauthorized</div>;
-  // }
+type PageProps = {
+  params: PageParams;
+};
+
+export default async function Page({ params }: PageProps) {
+  const { userId } = await auth();
+  const { workflowId } = await params;
+
+  if (!userId) {
+    return <div>unauthorized</div>;
+  }
 
   const workflow = await prisma.workflow.findUnique({
     where: {
-      id: workflowId as string,
-      // userId,
+      id: workflowId,
+      userId,
     }
   });
 
@@ -24,4 +31,12 @@ export default async function Page() {
   }
 
   return <Editor workflow={workflow} />;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { workflowId } = await params;
+  
+  return {
+    title: `Workflow Editor - ${workflowId}`,
+  };
 }

@@ -1,17 +1,25 @@
-'use client'
-
 import { GetWorkflowExecutionPhase } from "@/actions/workflows/GetWorkflowExecutionPhase";
 import Topbar from "@/app/workflow/_component/topbar/topbar";
-// import { auth } from "@clerk/nextjs/server";
-import { useParams } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { Loader2Icon } from "lucide-react";
 import { Suspense } from "react";
 import ExecutionViewer from "./_components/ExecutionViewer";
 
-export default function ExecutionViewerPage() {
+// Types for Next.js 15
+type PageParams = Promise<{ workflowId: string, executionId: string }>;
+
+type PageProps = {
+  params: PageParams;
+};
+
+export default async function ExecutionViewerPage({ params }: PageProps) {
     // Await the params object before accessing its properties
-    const params = useParams();
-    const { workflowId, executionId } = params;
+    const { workflowId, executionId } = await params;
+    
+    const {userId} = await auth();
+    if(!userId){
+        return <div>unauthorized</div>
+    }
     
     return (
     <div className="flex flex-col h-screen w-full overflow-hidden">

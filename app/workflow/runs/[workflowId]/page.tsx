@@ -1,17 +1,28 @@
-'use client'
 import React, { Suspense } from 'react'
-import {useParams} from 'next/navigation'
+import { auth } from '@clerk/nextjs/server';
 import Topbar from '../../_component/topbar/topbar'
 import { GetWorkflowExecutions } from '@/actions/workflows/GetWorkflowExecutions';
 import { InboxIcon, Loader2Icon } from 'lucide-react';
 import ExecutionsTable from './_components/ExecutionsTable';
 
-function ExecutionsPage() {
-  const params = useParams();
+// Types for Next.js 15
+type PageParams = Promise<{ workflowId: string }>;
+
+type PageProps = {
+  params: PageParams;
+};
+
+async function ExecutionsPage({ params }: PageProps) {
+    const { workflowId } = await params;
+    const {userId} = await auth();
+    if(!userId){
+        return <div>unauthorized</div>
+    }
+
   return (
     <div className='h-full overflow-auto w-full'>
         <Topbar 
-        workflowId={params.workflowId as string} 
+        workflowId={workflowId} 
         hideButtons
         title='All runs'
         subtitle='List of all your workflow rus'
@@ -23,7 +34,7 @@ function ExecutionsPage() {
             </div>
         }
         >
-            <ExecutionsTableWrapper workflowId={params.workflowId as string} />    
+            <ExecutionsTableWrapper workflowId={workflowId} />    
         </Suspense>
     </div>
   )
