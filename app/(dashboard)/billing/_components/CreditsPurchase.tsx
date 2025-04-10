@@ -7,15 +7,41 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { creditsPack, PackId, getCreditspack } from '@/types/billing'
 import { useUser } from '@clerk/nextjs'
 import { CoinsIcon, CreditCard, Loader2 } from 'lucide-react'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
 
 // Declare Razorpay type for window object (if not already globally declared)
 declare global {
     interface Window {
-        Razorpay: any; // Use 'any' or a more specific type if available
+        Razorpay: {
+            new(options: Record<string, unknown>): {
+                on: (event: string, callback: (response: RazorpayErrorResponse) => void) => void;
+                open: () => void;
+            };
+        }
     }
 }
+
+// Add type for Razorpay error response
+interface RazorpayErrorResponse {
+    error: {
+        code: string;
+        description: string;
+        reason: string;
+        source: string;
+        step: string;
+        metadata: Record<string, unknown>;
+    }
+}
+
+// Replace any with proper types
+type OrderResponse = {
+    id: string;
+    amount: number;
+    currency: string;
+    orderId: string;
+    [key: string]: unknown;
+};
 
 function CreditsPurchase() {
     const [selectedPackId, setSelectedPackId] = useState<PackId>(PackId.MEDIUM)
@@ -70,7 +96,7 @@ function CreditsPurchase() {
                 name: "IntelliScrape Credits", // Your company name
                 description: `Purchase ${pack.name}`,
                 order_id: orderData.id, // From API response
-                handler: function (response: any) {
+                handler: function (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) {
                     // Payment successful (Webhook handles credit grant)
                     console.log("Razorpay success response:", response)
                     toast.success("Payment Successful! Credits will be added shortly.")
@@ -105,7 +131,7 @@ function CreditsPurchase() {
             // 3. Open Razorpay Checkout
             const rzp = new window.Razorpay(options)
 
-            rzp.on('payment.failed', function (response: any) {
+            rzp.on('payment.failed', function (response: RazorpayErrorResponse) {
                 console.error("Razorpay payment failed:", response.error)
                 toast.error(`Payment Failed: ${response.error.description || response.error.reason}`)
                 // Optionally log detailed error response.error
