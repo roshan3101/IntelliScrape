@@ -1,5 +1,5 @@
 import { Period } from "@/types/analytics";
-import { endOfMonth, intervalToDuration, startOfMonth } from "date-fns";
+import { endOfMonth, endOfYear, intervalToDuration, startOfMonth, startOfYear } from "date-fns";
 
 export function DatesToDurationString(
     end: Date | null | undefined,
@@ -21,6 +21,14 @@ export function DatesToDurationString(
 }
 
 export function PeriodToDateRange(period: Period) {
+    if (period.month === null || period.month === undefined) {
+        // If only year is provided, use start and end of year
+        const startDate = startOfYear(new Date(period.year, 0))
+        const endDate = endOfYear(new Date(period.year, 0));
+        return {startDate, endDate};
+    }
+    
+    // Otherwise use month-specific range
     const startDate = startOfMonth(new Date(period.year, period.month))
     const endDate = endOfMonth(new Date(period.year, period.month));
     return {startDate, endDate};

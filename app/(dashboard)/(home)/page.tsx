@@ -1,18 +1,18 @@
-import { React, Suspense } from 'react'
-import { Skeleton } from '@/components/ui/skeleton';
 import { GetStatsCardsValues } from '@/actions/analytics/GetStatsCardsValues';
-import { CirclePlayIcon, CoinsIcon, WaypointsIcon } from 'lucide-react';
-import StatsCard from './_components/StatsCard';
 import { GetWorkflowExecutionStats } from '@/actions/analytics/GetWorkflowExecutionStats';
-import ExecutionStatusChart from './_components/ExecutionStatusChart';
 import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPeriod';
-import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 import { Period } from '@/types/analytics';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CirclePlayIcon, CoinsIcon, WaypointsIcon } from 'lucide-react';
+import React, { Suspense } from 'react'
+import StatsCard from './_components/StatsCard';
+import ExecutionStatusChart from './_components/ExecutionStatusChart';
+import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 
 async function HomePage() {
   const currentDate = new Date();
   const period: Period = {
-    month: currentDate.getMonth(),
+    month: null,
     year: currentDate.getFullYear(),
   }
 
@@ -71,6 +71,7 @@ function StatsCardSkeleton(){
 
 async function StatsExecutionStatus({selectedPeriod}:{selectedPeriod:Period}){
   const data = await GetWorkflowExecutionStats(selectedPeriod);
+
   return (
     <ExecutionStatusChart data={data} />
   )
@@ -78,8 +79,9 @@ async function StatsExecutionStatus({selectedPeriod}:{selectedPeriod:Period}){
 
 async function CreditsUsageInPeriod({selectedPeriod}:{selectedPeriod:Period}){
   const data = await GetCreditsUsageInPeriod(selectedPeriod);
+
   return (
-    <CreditUsageChart data={data} title="Daily credits spent" description="Daily credits consumed in current year" />
+    <CreditUsageChart data={data} title="Credits spent this year" description="Credits consumed in current year" />
   )
 }
 
