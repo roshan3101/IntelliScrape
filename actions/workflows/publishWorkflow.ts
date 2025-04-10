@@ -79,5 +79,5 @@ export async function PublishWorkflow({
     })
 
     // Revalidate the workflow editor page to reflect changes
-    revalidatePath(`/workflow/editor/${id}`);
+    revalidatePath(`/workflow/editor?id=${id}`);
 }

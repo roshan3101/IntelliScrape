@@ -53,7 +53,7 @@ function WorkflowCard({workflow} : {workflow: Workflow}) {
                 <div>
                 <h3 className='text-base font-bold text-muted-foreground flex items-center'>
                     <TooltipWrapper content={workflow.description}>
-                        <Link href={`/workflow/editor/${workflow.id}`} className='flex items-center hover:underline'>{workflow.name}</Link>
+                        <Link href={`/workflow/editor?id=${workflow.id}`} className='flex items-center hover:underline'>{workflow.name}</Link>
                     </TooltipWrapper>
                     {isDraft  && (
                         <span className='ml-2 px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full'>Draft</span>
@@ -67,7 +67,7 @@ function WorkflowCard({workflow} : {workflow: Workflow}) {
             </div>
             <div className='flex items-center space-x-2'>
                 {!isDraft && <RunButton workflowId={workflow.id} />}
-                <Link href={`/workflow/editor/${workflow.id}`} className={cn(
+                <Link href={`/workflow/editor?id=${workflow.id}`} className={cn(
                     buttonVariants({
                         variant: "outline",
                         size: "sm"
