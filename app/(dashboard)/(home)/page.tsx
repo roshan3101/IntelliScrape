@@ -12,19 +12,21 @@ import { GetCreditsUsageInPeriod } from '@/actions/analytics/GetCreditsUsageInPe
 import CreditUsageChart from './_components/biling/_components/CreditUsageChart';
 
 interface HomePageProps {
+  params: {};
   searchParams: {
     month?: string;
     year?: string;
   };
 }
 
-export default async function HomePage({ searchParams }: HomePageProps) {
+export default function HomePage({ searchParams }: HomePageProps) {
   const currentDate = new Date();
   const {month, year} = searchParams;
   const period: Period = {
     month: month ? parseInt(month) : currentDate.getMonth(),
     year: year ? parseInt(year) : currentDate.getFullYear(),
   }
+
 
   return (
     <div className='flex flex-1 flex-col h-full'>

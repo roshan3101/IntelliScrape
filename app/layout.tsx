@@ -5,16 +5,22 @@
  */
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 
-// Initialize Inter font for the app
-const inter = Inter({
+// Initialize Geist Sans font for general text
+const geistSans = Geist({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
-  variable: "--font-sans",
+});
+
+// Initialize Geist Mono font for code/monospace text
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 // Application metadata for SEO and browser information
@@ -50,7 +56,7 @@ export default function RootLayout({
           />
         </head>
         <body
-          className={`${inter.variable} font-sans antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {/* Global application providers */}
           <AppProviders>{children}</AppProviders>
