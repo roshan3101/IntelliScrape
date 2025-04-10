@@ -109,7 +109,7 @@ async function finalizeWorkflowExecution(
         }
     })
     .catch((err) => {
-
+        console.error("Error updating workflow",err);
     })
 
 

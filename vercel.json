@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "github": {
+    "silent": true
+  },
+  "env": {
+    "POSTGRES_PRISMA_URL": "DATABASE_URL",
+    "POSTGRES_URL_NON_POOLING": "DATABASE_URL_NON_POOLING"
+  }
+} 
