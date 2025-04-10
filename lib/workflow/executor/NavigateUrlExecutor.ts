@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { NavigateUrlTask } from "../task/NavigateUrl";
 
-export async function NavigateUrlExecutor (environment: ExecutionEnvironment<typeof NavigateUrlTask>) : Promise<boolean> {
+export async function NavigateUrlExecutor(environment: ExecutionEnvironment<typeof NavigateUrlTask>): Promise<boolean> {
     try {
         const url = environment.getInput("URL");
         if(!url){
@@ -13,8 +13,8 @@ export async function NavigateUrlExecutor (environment: ExecutionEnvironment<typ
 
         return true;
         
-    } catch (error:any) {
-        environment.log.error(error.message);
+    } catch (error: unknown) {
+        environment.log.error(error instanceof Error ? error.message : String(error));
         return false
     }
 }

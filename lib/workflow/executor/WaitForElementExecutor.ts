@@ -1,7 +1,7 @@
 import { ExecutionEnvironment } from "@/types/executor";
 import { WaitForElementTask } from "../task/WaitForElement";
 
-export async function WaitForElementExecutor (environment: ExecutionEnvironment<typeof WaitForElementTask>) : Promise<boolean> {
+export async function WaitForElementExecutor(environment: ExecutionEnvironment<typeof WaitForElementTask>): Promise<boolean> {
     try {
         const selector = environment.getInput("Selector");
         if(!selector){
@@ -12,17 +12,17 @@ export async function WaitForElementExecutor (environment: ExecutionEnvironment<
             environment.log.error("input-> visibility not defined");
         }
 
-        await environment.getPage()!.waitForSelector(selector,{
+        await environment.getPage()!.waitForSelector(selector, {
             visible: visibility === "visible",
-            hidden:visibility === "hidden",
-        })
+            hidden: visibility === "hidden",
+        });
 
         environment.log.info(`Element ${selector} became: ${visibility}`);
 
         return true;
         
-    } catch (error:any) {
-        environment.log.error(error.message);
-        return false
+    } catch (error: unknown) {
+        environment.log.error(error instanceof Error ? error.message : String(error));
+        return false;
     }
 }
