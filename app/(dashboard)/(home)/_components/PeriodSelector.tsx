@@ -39,7 +39,7 @@ function PeriodSelector({periods,selectedPeriod}:{periods:Period[];selectedPerio
         <SelectContent>
             {periods.map((period,index) => (
                 <SelectItem key={index} value={`${period.month}-${period.year}`}>
-                    {`${MONTH_NAMES[period.month]} ${period.year}`}
+                    {`${MONTH_NAMES[period?.month ?? 0]} ${period.year}`}
                 </SelectItem>
             ))}
         </SelectContent>

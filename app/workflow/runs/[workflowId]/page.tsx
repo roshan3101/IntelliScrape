@@ -1,14 +1,17 @@
+'use client'
 import React, { Suspense } from 'react'
+import {useParams} from 'next/navigation'
 import Topbar from '../../_component/topbar/topbar'
 import { GetWorkflowExecutions } from '@/actions/workflows/GetWorkflowExecutions';
 import { InboxIcon, Loader2Icon } from 'lucide-react';
 import ExecutionsTable from './_components/ExecutionsTable';
 
-function ExecutionsPage({params}:{params:{workflowId: string}}) {
+function ExecutionsPage() {
+  const params = useParams();
   return (
     <div className='h-full overflow-auto w-full'>
         <Topbar 
-        workflowId={params.workflowId} 
+        workflowId={params.workflowId as string} 
         hideButtons
         title='All runs'
         subtitle='List of all your workflow rus'
@@ -20,7 +23,7 @@ function ExecutionsPage({params}:{params:{workflowId: string}}) {
             </div>
         }
         >
-            <ExecutionsTableWrapper workflowId={params.workflowId} />    
+            <ExecutionsTableWrapper workflowId={params.workflowId as string} />    
         </Suspense>
     </div>
   )
