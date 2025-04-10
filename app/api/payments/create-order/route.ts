@@ -7,8 +7,7 @@ import { auth } from '@clerk/nextjs/server';
 const createOrderSchema = z.object({
   amount: z.number().min(100, { message: 'Amount must be at least 100 (representing 1 INR)' }), // Amount in smallest currency unit (e.g., paisa for INR)
   currency: z.string().default('INR'),
-  // Add other relevant fields like credit pack ID if needed
-  // creditPackId: z.string().optional(),
+  creditPackId: z.string().optional(), // Credit pack ID if using predefined packs
 });
 
 export async function POST(req: NextRequest) {
@@ -26,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid input', details: validation.error.flatten() }, { status: 400 });
     }
 
-    const { amount, currency /*, creditPackId */ } = validation.data;
+    const { amount, currency, creditPackId } = validation.data;
 
     const options = {
       amount: amount, // amount in the smallest currency unit
@@ -34,7 +33,7 @@ export async function POST(req: NextRequest) {
       receipt: `receipt_order_${new Date().getTime()}`,
       notes: {
         userId: userId,
-        // Add other notes if necessary, e.g., creditPackId
+        creditPackId: creditPackId || undefined,
       }
     };
 

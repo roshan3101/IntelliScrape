@@ -1,7 +1,9 @@
 export enum PackId {
-    SMALL = "SMALL",
-    MEDIUM = "MEDIUM",
-    LARGE = "LARGE",
+    BASIC = "basic",
+    STANDARD = "standard",
+    PREMIUM = "premium",
+    PRO = "pro",
+    ENTERPRISE = "enterprise",
 };
 
 export type creditsPack = {
@@ -14,25 +16,39 @@ export type creditsPack = {
 
 export const creditsPack = [
     {
-        id: PackId.SMALL,
-        name: "Small Pack",
-        label: "1,000 credits",
-        credits: 1000,
-        price: 299,
+        id: PackId.BASIC,
+        name: "Basic Pack",
+        label: "500 credits",
+        credits: 500,
+        price: 500, // ₹500
     },
     {
-        id: PackId.MEDIUM,
-        name: "Medium Pack",
+        id: PackId.STANDARD,
+        name: "Standard Pack",
+        label: "1,200 credits",
+        credits: 1200,
+        price: 1000, // ₹1,000
+    },
+    {
+        id: PackId.PREMIUM,
+        name: "Premium Pack",
         label: "2,500 credits",
         credits: 2500,
-        price: 399,
+        price: 2000, // ₹2,000
     },
     {
-        id: PackId.LARGE,
-        name: "Large Pack",
-        label: "5,000 credits",
-        credits: 5000,
-        price: 499,
+        id: PackId.PRO,
+        name: "Professional Pack",
+        label: "7,000 credits",
+        credits: 7000,
+        price: 5000, // ₹5,000
+    },
+    {
+        id: PackId.ENTERPRISE,
+        name: "Enterprise Pack",
+        label: "15,000 credits",
+        credits: 15000,
+        price: 10000, // ₹10,000
     },
 ]
 

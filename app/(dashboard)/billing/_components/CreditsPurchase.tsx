@@ -18,7 +18,7 @@ declare global {
 }
 
 function CreditsPurchase() {
-    const [selectedPackId, setSelectedPackId] = useState<PackId>(PackId.MEDIUM)
+    const [selectedPackId, setSelectedPackId] = useState<PackId>(PackId.STANDARD)
     const [isProcessing, setIsProcessing] = useState(false)
     const { user } = useUser() // Get user details for prefill
 
@@ -40,20 +40,27 @@ function CreditsPurchase() {
         }
 
         setIsProcessing(true)
-        toast.info("Processing your purchase...")
+        toast.info(`Preparing your ${pack.name} purchase...`)
+        console.log(`Initiating purchase for ${pack.name} (ID: ${pack.id}, Credits: ${pack.credits}, Price: ₹${pack.price})`)
 
         try {
             // 1. Create Order on Backend
+            console.log(`Creating order with creditPackId: ${pack.id}`)
             const response = await fetch('/api/payments/create-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 // Send amount in paisa (smallest currency unit)
-                body: JSON.stringify({ amount: pack.price * 100, currency: 'INR' /*, creditPackId: pack.id */ }), // Consider sending pack.id in notes
+                body: JSON.stringify({ 
+                    amount: pack.price * 100, 
+                    currency: 'INR',
+                    creditPackId: pack.id // Send the credit pack ID to the server
+                }),
             })
 
             const orderData = await response.json()
+            console.log("Order created:", orderData)
 
             if (!response.ok || !orderData.id) {
                 console.error("Failed to create order:", orderData)
@@ -68,12 +75,19 @@ function CreditsPurchase() {
                 amount: orderData.amount, // Amount from order response (in paisa)
                 currency: orderData.currency,
                 name: "IntelliScrape Credits", // Your company name
-                description: `Purchase ${pack.name}`,
+                description: `Purchase ${pack.name} - ${pack.credits} credits`,
                 order_id: orderData.id, // From API response
                 handler: function (response: any) {
                     // Payment successful (Webhook handles credit grant)
                     console.log("Razorpay success response:", response)
-                    toast.success("Payment Successful! Credits will be added shortly.")
+                    toast.success(
+                        `Payment Successful! ${pack.credits} credits will be added to your account shortly.`,
+                        { duration: 6000 }
+                    )
+                    toast.info(
+                        "Note: It may take a few moments for the credits to appear in your account.",
+                        { duration: 6000 }
+                    )
                     // Optional: Verify payment signature on backend here for immediate feedback,
                     // but webhook is the source of truth for granting credits.
                     // e.g., call another API route `/api/payments/verify-signature`
@@ -88,7 +102,7 @@ function CreditsPurchase() {
                 notes: {
                     // address: "Your Corporate Office Address", // Optional
                     userId: user.id, // Pass userId for webhook processing
-                    packId: pack.id, // Pass packId for webhook processing/logging
+                    creditPackId: pack.id, // Pass creditPackId for proper credit allocation
                 },
                 theme: {
                     color: "#3b82f6", // Match your theme (Tailwind blue-500)
@@ -101,6 +115,14 @@ function CreditsPurchase() {
                     }
                 }
             }
+
+            // Log crucial checkout details for debugging
+            console.log(`Checkout details:
+                - Amount: ${options.amount/100} ${options.currency}
+                - Order ID: ${options.order_id}
+                - User ID: ${options.notes.userId}
+                - Credit Pack: ${options.notes.creditPackId} (${pack.credits} credits)
+            `)
 
             // 3. Open Razorpay Checkout
             const rzp = new window.Razorpay(options)
