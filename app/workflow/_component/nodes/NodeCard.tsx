@@ -1,7 +1,5 @@
 "use client"
 
-import useFlowValidation from '@/components/hooks/useFlowValidation';
-import { cn } from '@/lib/utils';
 import { useReactFlow } from '@xyflow/react';
 import React from 'react'
 
@@ -16,40 +14,36 @@ interface NodeCardProps {
 }
 
 function NodeCard({
-    children,
-    nodeId,
-    isSelected
-}: {
-    children: React.ReactNode;
-    nodeId: string;
-    isSelected: boolean;
-}) {
+    data,
+    selected
+}: NodeCardProps) {
+    const { setNodes } = useReactFlow();
+    const onDragStart = (event: React.DragEvent, nodeType: string) => {
+        if (event.dataTransfer) {
+            event.dataTransfer.setData('application/reactflow', nodeType);
+            event.dataTransfer.effectAllowed = 'move';
+        }
+    };
 
-    const { getNode,setCenter } = useReactFlow();
-    const { invalidInputs } = useFlowValidation();
-    const hasInvaliInputs = invalidInputs.some((node : any) => node.nodeId === nodeId);
-
-
-  return (
-    <div 
-    onDoubleClick={() => {
-        const node = getNode(nodeId);
-        if(!node) return;
-        const {position,measured } = node;
-        if(!position || !measured) return;
-        const {width,height} = measured;
-        const x = position.x + width!/2;
-        const y = position.y + height!/2;
-        if(x===undefined || y===undefined) return;
-        setCenter(x,y,{
-            zoom: 1,
-            duration: 500,
-        })
-    }}
-    className={cn('rounded-md cursor-pointer bg-background border-2 border-separate w-[420px] text-xs gap-1 flex flex-col',isSelected && "border-primary",hasInvaliInputs && "border-destructive border-2")}>
-        {children}
-    </div>
-  )
+    return (
+        <div
+            className={`p-3 border rounded-lg shadow-sm cursor-move hover:shadow-md transition-shadow ${
+                selected ? 'border-primary bg-primary/5' : 'border-border'
+            }`}
+            draggable
+            onDragStart={(e) => onDragStart(e, data.type)}
+        >
+            <div className="flex items-center gap-2">
+                {data.icon && <div className="text-primary">{data.icon}</div>}
+                <div>
+                    <h3 className="font-medium">{data.label}</h3>
+                    {data.description && (
+                        <p className="text-sm text-muted-foreground">{data.description}</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default NodeCard
+export default NodeCard;

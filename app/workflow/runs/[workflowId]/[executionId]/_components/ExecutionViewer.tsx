@@ -3,7 +3,7 @@
 import { GetWorkflowExecutionPhase } from '@/actions/workflows/GetWorkflowExecutionPhase'
 import { ExecutionPhaseStatus, WorkflowExecutionStatus } from '@/types/workflow';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarIcon, CircleDashedIcon, ClockIcon, CoinsIcon, LoaderIcon, LucideIcon, LucideProps, WorkflowIcon } from 'lucide-react';
+import { CalendarIcon, CircleDashedIcon, ClockIcon, CoinsIcon, LoaderIcon, LucideIcon, WorkflowIcon } from 'lucide-react';
 import { formatDistanceToNow } from "date-fns"
 import React, { ReactNode, useEffect, useState } from 'react'
 import { Separator } from '@/components/ui/separator';
