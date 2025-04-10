@@ -3,6 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@clerk/nextjs/server';
 
+// Define types for Razorpay order creation
+interface RazorpayOrderCreateOptions {
+  amount: number;
+  currency: string;
+  receipt?: string;
+  notes?: Record<string, string>;
+  payment_capture?: boolean;
+  partial_payment?: boolean;
+}
+
 // Define the expected request body schema
 const createOrderSchema = z.object({
   amount: z.number().min(100, { message: 'Amount must be at least 100 (representing 1 INR)' }), // Amount in smallest currency unit (e.g., paisa for INR)
@@ -27,14 +37,22 @@ export async function POST(req: NextRequest) {
 
     const { amount, currency, creditPackId } = validation.data;
 
-    const options = {
+    // Create notes object with proper types (no undefined values)
+    const notes: Record<string, string> = {
+      userId: userId
+    };
+    
+    // Only add creditPackId if it exists
+    if (creditPackId) {
+      notes.creditPackId = creditPackId;
+    }
+
+    // Create order options with proper types
+    const options: RazorpayOrderCreateOptions = {
       amount: amount, // amount in the smallest currency unit
       currency: currency,
       receipt: `receipt_order_${new Date().getTime()}`,
-      notes: {
-        userId: userId,
-        creditPackId: creditPackId || undefined,
-      }
+      notes: notes
     };
 
     console.log("Creating Razorpay order with options:", options);
